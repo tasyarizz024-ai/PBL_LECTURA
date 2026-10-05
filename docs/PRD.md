@@ -42,7 +42,9 @@ Web Dashboard LECTURA untuk 2 aktor: **Mahasiswa** (cari & pantau status dosen) 
 - Status card utama (real-time/prediksi + confidence %)
 - Lokasi visual di peta kampus (titik gedung)
 - **Jadwal mengajar hari itu** — daftar singkat "Ruang X, 10:00–12:00, Mata Kuliah Y" (bukan jadwal lengkap kelas mahasiswa spesifik seperti e-Kuliah, tapi jadwal dosen di semua kelas)
-- Probabilitas prediksi ketersediaan **dihasilkan oleh model Machine Learning** (Decision Tree Classifier) yang dilatih dari histori aktivitas 7 hari terakhir — bukan perhitungan manual
+- **Jadwal Prediksi Hari Ini** — slot lokasi hasil model ML (`habit_summary`), fallback ke jadwal resmi bila prediksi kosong
+- **Tombol "Jadwal Minggu Ini"** — daftar prediksi + jadwal resmi per hari (Senin–Minggu)
+- Probabilitas prediksi ketersediaan **dihasilkan oleh model Machine Learning** (Decision Tree Classifier) yang dilatih dari histori aktivitas 2 minggu terakhir — bukan perhitungan manual
 - Timestamp update terakhir
 
 ### C. Admin
@@ -66,6 +68,14 @@ Web Dashboard LECTURA untuk 2 aktor: **Mahasiswa** (cari & pantau status dosen) 
 
 - Tabel/timeline riwayat lokasi per dosen, filter tanggal & dosen
 
+**5. Manajemen Jadwal Mengajar**
+
+- Tabel jadwal (filter by dosen & hari)
+- Form tambah/edit manual: dosen, hari, jam mulai/selesai, mata kuliah, gedung
+- Validasi: `jam_selesai > jam_mulai` + cek bentrok jadwal dosen yang sama
+- **Import CSV/Excel** (NIP dosen, nama gedung sebagai referensi) dengan ringkasan berhasil/gagal per baris
+- Link download template CSV
+
 *(Manajemen Jurusan/Prodi juga perlu ada sebagai data master pendukung filter — bisa jadi sub-menu sederhana di bawah Manajemen Dosen atau menu terpisah.)*
 
 ## 5. Functional Requirements (ringkas)
@@ -79,10 +89,12 @@ Web Dashboard LECTURA untuk 2 aktor: **Mahasiswa** (cari & pantau status dosen) 
 | CRUD data master (dosen, gedung, jurusan/prodi) | Must | |
 | Mapping gedung ↔ geofence | Should | Peta interaktif |
 | Log histori lokasi | Should | |
+| CRUD jadwal mengajar + import CSV/Excel | Must | |
+| Jadwal prediksi hari ini & mingguan (Mahasiswa) | Should | Dari `habit_summary` |
 
 ## 6. Fitur Prediksi Ketersediaan Dosen (Machine Learning)
 
-Sistem menggunakan model **Machine Learning (Decision Tree Classifier)** yang dilatih dari data historis lokasi dosen (`location_logs`) selama 7 hari terakhir. Model mempelajari pola hari dan jam terhadap gedung tempat dosen biasa berada, lalu menghasilkan probabilitas prediksi untuk tiap kombinasi hari+jam. Proses pelatihan ulang (retraining) dijalankan otomatis setiap malam melalui scheduled job (cron), dan hasilnya disimpan ke tabel `habit_summary` untuk dikonsumsi oleh fitur pencarian & detail dosen.
+Sistem menggunakan model **Machine Learning (Decision Tree Classifier)** yang dilatih dari data historis lokasi dosen (`location_logs`) selama 2 minggu terakhir. Model mempelajari pola hari dan jam terhadap gedung tempat dosen biasa berada, lalu menghasilkan probabilitas prediksi untuk tiap kombinasi hari+jam. Proses pelatihan ulang (retraining) dijalankan otomatis setiap malam jam 01:00 melalui scheduled job (cron), dan hasilnya disimpan ke tabel `habit_summary`. Status prediksi diperbarui otomatis tiap 1 menit via `sp_refresh_prediksi`; status `realtime` hanya diset untuk log lokasi < 15 menit terakhir.
 
 ## 7. Visual Design Guidelines
 
