@@ -1,0 +1,8 @@
+nip_dosen,hari,jam_mulai,jam_selesai,mata_kuliah,nama_gedung
+198501012010011001,senin,10:00,12:00,Sistem Basis Data,Sakura
+198602022011012002,rabu,08:00,10:00,Pemrograman Web,PPA
+198703032012011003,kamis,13:00,15:00,Struktur Data,GSG
+198804042013012004,jumat,08:00,10:00,Jaringan Komputer,GKB
+198999999999999999,jumat,08:00,10:00,Tidak Ada NIP,GSG
+198905052014011004,senin,07:00,06:00,Jam Salah,GSG
+198905052014011004,senin,08:00,10:00,Hidrolika,Gedung Gaib
