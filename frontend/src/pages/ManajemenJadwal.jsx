@@ -21,8 +21,7 @@ export default function ManajemenJadwal() {
   const [list, setList] = useState([]);
   const [dosenList, setDosenList] = useState([]);
   const [gedungList, setGedungList] = useState([]);
-  const [filterDosen, setFilterDosen] = useState('');
-  const [filterHari, setFilterHari] = useState('');
+  const [filterProdi, setFilterProdi] = useState('');
   const [modal, setModal] = useState(null); // {data} edit or {data:null}
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [importOpen, setImportOpen] = useState(false);
@@ -31,6 +30,7 @@ export default function ManajemenJadwal() {
   const [importError, setImportError] = useState('');
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [prodiList, setProdiList] = useState([]);
 
   const flash = useCallback((msg, type = 'success') => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); }, []);
 
@@ -38,18 +38,19 @@ export default function ManajemenJadwal() {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (filterDosen) params.append('dosen_id', filterDosen);
-      if (filterHari) params.append('hari', filterHari);
-      const [j, d, g] = await Promise.all([
+      if (filterProdi) params.append('prodi_id', filterProdi);
+      const [j, d, g, pp] = await Promise.all([
         apiJson(`/api/jadwal-mengajar?${params}`),
         apiJson('/api/dosen?limit=1000'),
         apiJson('/api/gedung'),
+        apiJson('/api/jurusan-prodi/prodi'),
       ]);
       setList(j.data || []);
       setDosenList(d.data || []);
       setGedungList(g.data || []);
+      setProdiList(pp.data || []);
     } catch (err) { flash(err.message, 'error'); } finally { setLoading(false); }
-  }, [filterDosen, filterHari, flash]);
+  }, [filterProdi, flash]);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
@@ -116,13 +117,9 @@ export default function ManajemenJadwal() {
 
       {/* Filters */}
       <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-        <select value={filterDosen} onChange={(e) => setFilterDosen(e.target.value)} style={{ ...fieldStyle, width: 'auto' }}>
-          <option value="">Semua Dosen</option>
-          {dosenList.map((d) => <option key={d.id} value={d.id}>{d.nama}</option>)}
-        </select>
-        <select value={filterHari} onChange={(e) => setFilterHari(e.target.value)} style={{ ...fieldStyle, width: 'auto' }}>
-          <option value="">Semua Hari</option>
-          {HARI.map((h) => <option key={h} value={h}>{h}</option>)}
+        <select value={filterProdi} onChange={(e) => setFilterProdi(e.target.value)} style={{ ...fieldStyle, width: 'auto' }}>
+          <option value="">Semua Prodi</option>
+          {prodiList.map((p) => <option key={p.id} value={p.id}>{p.nama_prodi}</option>)}
         </select>
       </div>
 

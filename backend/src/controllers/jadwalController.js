@@ -25,7 +25,7 @@ const hasConflict = async (dosen_id, hari, jam_mulai, jam_selesai, excludeId = n
 
 const getJadwal = async (req, res) => {
   try {
-    const { dosen_id, hari } = req.query;
+    const { dosen_id, hari, prodi_id } = req.query;
     let sql = `
       SELECT jm.id, jm.dosen_id, d.nama AS nama_dosen, jm.hari, jm.jam_mulai, jm.jam_selesai,
              jm.mata_kuliah, jm.gedung_id, g.nama_gedung, p.nama_prodi
@@ -36,6 +36,7 @@ const getJadwal = async (req, res) => {
       WHERE 1=1`;
     const params = [];
     if (dosen_id) { sql += ' AND jm.dosen_id = ?'; params.push(dosen_id); }
+    if (prodi_id) { sql += ' AND d.prodi_id = ?'; params.push(prodi_id); }
     if (hari) { sql += ' AND jm.hari = ?'; params.push(hari); }
     sql += " ORDER BY FIELD(jm.hari,'senin','selasa','rabu','kamis','jumat','sabtu','minggu'), jm.jam_mulai";
     const [rows] = await pool.query(sql, params);
