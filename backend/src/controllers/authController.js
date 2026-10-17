@@ -33,15 +33,19 @@ const login = async (req, res) => {
           m.id AS mahasiswa_id, 
           m.nim, 
           m.nama AS mahasiswa_nama, 
-          m.prodi AS mahasiswa_prodi
+          m.prodi AS mahasiswa_prodi,
+          d.id AS dosen_id,
+          d.nip AS dosen_nip,
+          d.nama AS dosen_nama
         FROM users u
         LEFT JOIN mahasiswa m ON m.user_id = u.id
+        LEFT JOIN dosen d      ON d.user_id = u.id
         WHERE u.email = ?
         LIMIT 1
       `;
       queryParams = [loginIdentifier];
     } else {
-      // Jika tidak ada '@', diasumsikan login menggunakan NIM (khusus mahasiswa)
+      // Jika tidak ada '@', diasumsikan login memakai NIM (mahasiswa) atau NIP (dosen)
       query = `
         SELECT 
           u.id, 
@@ -51,13 +55,17 @@ const login = async (req, res) => {
           m.id AS mahasiswa_id, 
           m.nim, 
           m.nama AS mahasiswa_nama, 
-          m.prodi AS mahasiswa_prodi
+          m.prodi AS mahasiswa_prodi,
+          d.id AS dosen_id,
+          d.nip AS dosen_nip,
+          d.nama AS dosen_nama
         FROM users u
-        INNER JOIN mahasiswa m ON m.user_id = u.id
-        WHERE m.nim = ?
+        LEFT JOIN mahasiswa m ON m.user_id = u.id
+        LEFT JOIN dosen d      ON d.user_id = u.id
+        WHERE m.nim = ? OR d.nip = ?
         LIMIT 1
       `;
-      queryParams = [loginIdentifier];
+      queryParams = [loginIdentifier, loginIdentifier];
     }
 
     const [rows] = await pool.query(query, queryParams);
@@ -88,14 +96,22 @@ const login = async (req, res) => {
       });
     }
 
+    // Nama & identitas unik sesuai role (mahasiswa: NIM, dosen: NIP)
+    const displayName =
+      user.mahasiswa_nama ||
+      user.dosen_nama ||
+      (user.role === 'admin' ? 'Administrator' : null);
+    const displayId = user.nim || user.dosen_nip || null;
+
     // Buat JWT Token
     const payload = {
       id: user.id,
       email: user.email,
       role: user.role,
       mahasiswa_id: user.mahasiswa_id || null,
-      nim: user.nim || null,
-      nama: user.mahasiswa_nama || (user.role === 'admin' ? 'Administrator' : null),
+      dosen_id: user.dosen_id || null,
+      nim: displayId,
+      nama: displayName,
     };
 
     const token = jwt.sign(
@@ -113,8 +129,8 @@ const login = async (req, res) => {
         id: user.id,
         email: user.email,
         role: user.role,
-        nama: user.mahasiswa_nama || (user.role === 'admin' ? 'Administrator' : null),
-        nim: user.nim || null,
+        nama: displayName,
+        nim: displayId,
         prodi: user.mahasiswa_prodi || null,
       },
     });
@@ -146,9 +162,14 @@ const getMe = async (req, res) => {
         m.id AS mahasiswa_id, 
         m.nim, 
         m.nama AS mahasiswa_nama, 
-        m.prodi AS mahasiswa_prodi
+        m.prodi AS mahasiswa_prodi,
+        d.id AS dosen_id,
+        d.nip AS dosen_nip,
+        d.nama AS dosen_nama,
+        d.gps_enabled
       FROM users u
       LEFT JOIN mahasiswa m ON m.user_id = u.id
+      LEFT JOIN dosen d      ON d.user_id = u.id
       WHERE u.id = ?
       LIMIT 1
       `,
@@ -170,9 +191,16 @@ const getMe = async (req, res) => {
         id: user.id,
         email: user.email,
         role: user.role,
-        nama: user.mahasiswa_nama || (user.role === 'admin' ? 'Administrator' : null),
-        nim: user.nim || null,
+        nama:
+          user.mahasiswa_nama ||
+          user.dosen_nama ||
+          (user.role === 'admin' ? 'Administrator' : null),
+        nim: user.nim || user.dosen_nip || null,
         prodi: user.mahasiswa_prodi || null,
+        gps_enabled:
+          user.gps_enabled === null || user.gps_enabled === undefined
+            ? null
+            : Boolean(user.gps_enabled),
         created_at: user.created_at,
       },
     });

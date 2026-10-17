@@ -23,6 +23,7 @@ S-LECTURA/
 │   └── 04_views_sp_triggers.sql # 3 Views, Triggers & Stored Procedures
 ├── docs/                  # Dokumentasi & PRD
 │   ├── PRD.md             # Dokumen Product Requirements
+│   ├── SPESIFIKASI_APLIKASI_DOSEN.md # Rujukan pembuatan aplikasi Android Dosen
 │   └── skema-database.docx# Dokumentasi rancangan skema
 ├── frontend/              # React (Vite) Single Page Application
 │   ├── src/
@@ -45,6 +46,21 @@ Skema mencakup:
 - **Views**: `v_pencarian_dosen`, `v_jadwal_dosen`, `v_log_aktivitas`.
 - **Triggers**: `trg_location_logs_after_insert`, `trg_jadwal_mengajar_before_insert`.
 - **Stored Procedures**: `sp_tambah_dosen`, `sp_refresh_prediksi`.
+
+### API Aplikasi Dosen (Android)
+Base path `/api/app-dosen` — khusus role `dosen`, data selalu milik user yang login:
+
+| Endpoint | Method | Fungsi |
+|---|---|---|
+| `/api/app-dosen/me` | GET | Profil dosen + status terkini + daftar gedung |
+| `/api/app-dosen/lokasi` | POST | Kirim 1 titik GPS (backend menentukan gedung via Haversine) |
+| `/api/app-dosen/lokasi/batch` | POST | Kirim antrean log offline (maks. 200) |
+| `/api/app-dosen/gps` | PATCH | Toggle pelacakan (`gps_enabled`) |
+| `/api/app-dosen/jadwal` | GET | Jadwal mengajar sendiri |
+| `/api/app-dosen/lokasi/riwayat` | GET | Riwayat log lokasi sendiri |
+
+Rincian kontrak request/response & spesifikasi tampilan aplikasi ada di
+`docs/SPESIFIKASI_APLIKASI_DOSEN.md`.
 
 ---
 
