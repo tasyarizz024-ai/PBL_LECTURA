@@ -54,10 +54,10 @@ export const colors = {
 
   // Text & Outline
   onSurface: '#111c2d',              // Text utama (deep dark navy)
-  onSurfaceVariant: '#464554',       // Text muted / subtitle
+  onSurfaceVariant: '#33323f',       // Text muted / subtitle (kontras diperkuat)
   onBackground: '#111c2d',
-  outline: '#767586',                // Border umum
-  outlineVariant: '#c7c4d7',         // Border halus / placeholder
+  outline: '#57566b',                // Border umum / text sekunder kecil (kontras diperkuat)
+  outlineVariant: '#a5a3bd',         // Border halus / placeholder
 
   // Error / Alert
   error: '#ba1a1a',
@@ -70,29 +70,29 @@ export const colors = {
     realtime: {
       key: 'realtime',
       label: 'Terlacak',
-      color: '#10b981',
-      bg: '#ecfdf5',
-      border: 'rgba(16, 185, 129, 0.25)',
-      text: '#047857',
+      color: '#059669',
+      bg: '#a7f3d0',
+      border: 'rgba(5, 150, 105, 0.45)',
+      text: '#065f46',
       dot: '#10b981',
     },
     prediksi: {
       key: 'prediksi',
       label: 'Prediksi',
-      color: '#0284c7',
-      bg: '#e0f2fe',
-      border: 'rgba(2, 132, 199, 0.25)',
-      text: '#0369a1',
+      color: '#0369a1',
+      bg: '#bae6fd',
+      border: 'rgba(3, 105, 161, 0.45)',
+      text: '#075985',
       dot: '#0284c7',
     },
     tidak_diketahui: {
       key: 'tidak_diketahui',
       label: 'Tidak diketahui',
       color: '#6b7280',
-      bg: '#f3f4f6',
-      border: 'rgba(107, 114, 128, 0.2)',
-      text: '#4b5563',
-      dot: '#9ca3af',
+      bg: '#d1d5db',
+      border: 'rgba(75, 85, 99, 0.5)',
+      text: '#374151',
+      dot: '#6b7280',
     },
   },
 };
@@ -116,34 +116,34 @@ export const typography = {
   },
   fontSize: {
     labelSm: {
-      size: '11px',
-      lineHeight: '16px',
+      size: '13px',
+      lineHeight: '18px',
       letterSpacing: '0.04em',
       fontWeight: 600,
     },
     labelMd: {
-      size: '13px',
-      lineHeight: '18px',
+      size: '14px',
+      lineHeight: '20px',
       fontWeight: 500,
     },
     bodyMd: {
-      size: '14px',
-      lineHeight: '22px',
+      size: '16px',
+      lineHeight: '24px',
       fontWeight: 400,
     },
     bodyLg: {
-      size: '16px',
-      lineHeight: '26px',
+      size: '18px',
+      lineHeight: '28px',
       fontWeight: 400,
     },
     titleMd: {
-      size: '16px',
-      lineHeight: '24px',
+      size: '18px',
+      lineHeight: '26px',
       fontWeight: 600,
     },
     headlineSm: {
-      size: '20px',
-      lineHeight: '28px',
+      size: '22px',
+      lineHeight: '30px',
       fontWeight: 600,
     },
     headlineMd: {

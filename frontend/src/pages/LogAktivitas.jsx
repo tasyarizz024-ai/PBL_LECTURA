@@ -89,7 +89,7 @@ export default function LogAktivitas() {
     border: `1px solid ${theme.colors.surfaceContainerHighest}`,
     backgroundColor: theme.colors.surfaceContainerLow,
     color: theme.colors.onSurface,
-    fontSize: '13px',
+    fontSize: '16px',
     fontFamily: theme.typography.fontFamily.base,
     outline: 'none',
     cursor: 'pointer',
@@ -102,7 +102,7 @@ export default function LogAktivitas() {
         <h1 style={{ fontSize: '22px', fontWeight: 800, color: theme.colors.onSurface, margin: '0 0 0.25rem 0' }}>
           Log Aktivitas Lokasi
         </h1>
-        <p style={{ margin: 0, fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+        <p style={{ margin: 0, fontSize: '16px', color: theme.colors.onSurfaceVariant }}>
           Riwayat lengkap aktivitas check-in lokasi dosen di setiap gedung kampus.
         </p>
       </div>
@@ -144,7 +144,7 @@ export default function LogAktivitas() {
             style={inputStyle}
             title="Dari tanggal"
           />
-          <span style={{ fontSize: '12px', color: theme.colors.onSurfaceVariant }}>s/d</span>
+          <span style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant }}>s/d</span>
           <input
             type="date"
             value={dateTo}
@@ -166,7 +166,7 @@ export default function LogAktivitas() {
               backgroundColor: 'transparent',
               color: theme.colors.onSurfaceVariant,
               cursor: 'pointer',
-              fontSize: '12px', fontWeight: 600,
+              fontSize: '16px', fontWeight: 600,
               fontFamily: theme.typography.fontFamily.base,
             }}
           >
@@ -175,7 +175,7 @@ export default function LogAktivitas() {
           </button>
         )}
 
-        <div style={{ marginLeft: 'auto', fontSize: '12px', color: theme.colors.onSurfaceVariant, fontWeight: 600, whiteSpace: 'nowrap' }}>
+        <div style={{ marginLeft: 'auto', fontSize: '16px', color: theme.colors.onSurfaceVariant, fontWeight: 600, whiteSpace: 'nowrap' }}>
           {totalItems} entri ditemukan
         </div>
       </div>
@@ -200,7 +200,7 @@ export default function LogAktivitas() {
                     style={{
                       padding: '0.85rem 1.25rem',
                       textAlign: h === '#' ? 'center' : 'left',
-                      fontSize: '11px', fontWeight: 700,
+                      fontSize: '16px', fontWeight: 700,
                       color: theme.colors.onSurfaceVariant,
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em',
@@ -223,7 +223,7 @@ export default function LogAktivitas() {
                 <tr>
                   <td colSpan={6} style={{ padding: '3rem', textAlign: 'center' }}>
                     <span className="material-symbols-outlined" style={{ fontSize: '44px', color: theme.colors.outlineVariant, display: 'block', marginBottom: '0.75rem' }}>history_toggle_off</span>
-                    <p style={{ margin: 0, fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+                    <p style={{ margin: 0, fontSize: '16px', color: theme.colors.onSurfaceVariant }}>
                       Tidak ada log aktivitas yang sesuai dengan filter.
                     </p>
                   </td>
@@ -239,20 +239,20 @@ export default function LogAktivitas() {
                         borderBottom: `1px solid ${theme.colors.surfaceContainer}`,
                       }}
                     >
-                      <td style={{ padding: '0.9rem 1.25rem', textAlign: 'center', fontSize: '12px', color: theme.colors.outline, fontWeight: 600 }}>
+                      <td style={{ padding: '0.9rem 1.25rem', textAlign: 'center', fontSize: '16px', color: theme.colors.outline, fontWeight: 600 }}>
                         {rowNum}
                       </td>
                       <td style={{ padding: '0.9rem 1.25rem' }}>
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: theme.colors.onSurface }}>
+                        <div style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface }}>
                           {log.nama_dosen || '—'}
                         </div>
                         {log.nip && (
-                          <div style={{ fontSize: '11px', color: theme.colors.outline, fontFamily: 'monospace' }}>
+                          <div style={{ fontSize: '16px', color: theme.colors.outline, fontFamily: 'monospace' }}>
                             NIP: {log.nip}
                           </div>
                         )}
                       </td>
-                      <td style={{ padding: '0.9rem 1.25rem', fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+                      <td style={{ padding: '0.9rem 1.25rem', fontSize: '16px', color: theme.colors.onSurfaceVariant }}>
                         {log.nama_gedung || '—'}
                       </td>
                       <td style={{ padding: '0.9rem 1.25rem' }}>
@@ -261,7 +261,7 @@ export default function LogAktivitas() {
                             display: 'inline-block',
                             padding: '0.25rem 0.75rem',
                             borderRadius: theme.borderRadius.full,
-                            fontSize: '11px', fontWeight: 700,
+                            fontSize: '16px', fontWeight: 700,
                             backgroundColor: st.bg,
                             color: st.color,
                             whiteSpace: 'nowrap',
@@ -270,7 +270,7 @@ export default function LogAktivitas() {
                           {st.label}
                         </span>
                       </td>
-                      <td style={{ padding: '0.9rem 1.25rem', fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+                      <td style={{ padding: '0.9rem 1.25rem', fontSize: '16px', color: theme.colors.onSurfaceVariant }}>
                         {log.probabilitas != null
                           ? (
                             <span style={{ fontWeight: 700, color: theme.colors.primary }}>
@@ -279,7 +279,7 @@ export default function LogAktivitas() {
                           )
                           : '—'}
                       </td>
-                      <td style={{ padding: '0.9rem 1.25rem', fontSize: '12px', color: theme.colors.outline, whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: '0.9rem 1.25rem', fontSize: '16px', color: theme.colors.outline, whiteSpace: 'nowrap' }}>
                         {log.waktu_log
                           ? new Date(log.waktu_log).toLocaleString('id-ID', {
                               weekday: 'short',
@@ -314,7 +314,7 @@ export default function LogAktivitas() {
               backgroundColor: page <= 1 ? theme.colors.surfaceContainerLow : theme.colors.surfaceContainerLowest,
               color: page <= 1 ? theme.colors.outline : theme.colors.onSurface,
               cursor: page <= 1 ? 'not-allowed' : 'pointer',
-              fontSize: '13px', fontWeight: 600,
+              fontSize: '16px', fontWeight: 600,
               fontFamily: theme.typography.fontFamily.base,
               display: 'flex', alignItems: 'center', gap: '0.25rem',
             }}
@@ -347,7 +347,7 @@ export default function LogAktivitas() {
                   backgroundColor: isActive ? theme.colors.primary : 'transparent',
                   color: isActive ? '#fff' : theme.colors.onSurfaceVariant,
                   cursor: 'pointer',
-                  fontSize: '13px', fontWeight: isActive ? 700 : 500,
+                  fontSize: '16px', fontWeight: isActive ? 700 : 500,
                   fontFamily: theme.typography.fontFamily.base,
                   boxShadow: isActive ? theme.shadows.btnPrimary : 'none',
                 }}
@@ -368,7 +368,7 @@ export default function LogAktivitas() {
               backgroundColor: page >= totalPages ? theme.colors.surfaceContainerLow : theme.colors.surfaceContainerLowest,
               color: page >= totalPages ? theme.colors.outline : theme.colors.onSurface,
               cursor: page >= totalPages ? 'not-allowed' : 'pointer',
-              fontSize: '13px', fontWeight: 600,
+              fontSize: '16px', fontWeight: 600,
               fontFamily: theme.typography.fontFamily.base,
               display: 'flex', alignItems: 'center', gap: '0.25rem',
             }}

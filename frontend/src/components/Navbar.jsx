@@ -54,7 +54,7 @@ export default function Navbar({ activeTab = 'cari-dosen', onNavigate, user, onL
             </span>
             <span
               style={{
-                fontSize: '11px',
+                fontSize: '16px',
                 fontWeight: 600,
                 color: theme.colors.onSurfaceVariant,
                 display: 'block',
@@ -110,7 +110,7 @@ export default function Navbar({ activeTab = 'cari-dosen', onNavigate, user, onL
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '14px',
+                fontSize: '16px',
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
@@ -118,10 +118,10 @@ export default function Navbar({ activeTab = 'cari-dosen', onNavigate, user, onL
               </span>
             </div>
             <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurface }}>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface }}>
                 {user?.nama || 'Mahasiswa'}
               </div>
-              <div style={{ fontSize: '10px', color: theme.colors.onSurfaceVariant }}>
+              <div style={{ fontSize: '12px', color: theme.colors.onSurfaceVariant }}>
                 {user?.nim || 'Portal Mahasiswa'}
               </div>
             </div>
@@ -140,7 +140,7 @@ export default function Navbar({ activeTab = 'cari-dosen', onNavigate, user, onL
                 borderRadius: theme.borderRadius.full,
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: '12px',
+                fontSize: '16px',
                 fontWeight: 700,
                 color: theme.colors.error,
                 fontFamily: theme.typography.fontFamily.base,

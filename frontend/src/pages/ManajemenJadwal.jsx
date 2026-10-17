@@ -8,12 +8,12 @@ const EMPTY_FORM = { dosen_id: '', hari: 'senin', jam_mulai: '', jam_selesai: ''
 const fieldStyle = {
   width: '100%', padding: '0.6rem 0.85rem', borderRadius: theme.borderRadius.default,
   border: `1px solid ${theme.colors.outlineVariant}`, backgroundColor: theme.colors.surfaceContainerLowest,
-  fontSize: '13px', color: theme.colors.onSurface, fontFamily: theme.typography.fontFamily.base,
+  fontSize: '16px', color: theme.colors.onSurface, fontFamily: theme.typography.fontFamily.base,
   outline: 'none', boxSizing: 'border-box',
 };
 
 const thStyle = {
-  padding: '0.85rem 1.25rem', textAlign: 'left', fontSize: '11px', fontWeight: 700,
+  padding: '0.85rem 1.25rem', textAlign: 'left', fontSize: '16px', fontWeight: 700,
   color: theme.colors.onSurfaceVariant, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap',
 };
 
@@ -95,7 +95,7 @@ export default function ManajemenJadwal() {
   return (
     <div>
       {toast && (
-        <div style={{ position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 300, padding: '0.85rem 1.25rem', borderRadius: theme.borderRadius.default, backgroundColor: toast.type === 'error' ? theme.colors.errorContainer : '#ecfdf5', color: toast.type === 'error' ? theme.colors.onErrorContainer : '#047857', boxShadow: theme.shadows.card, fontSize: '13px', fontWeight: 600 }}>
+        <div style={{ position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 300, padding: '0.85rem 1.25rem', borderRadius: theme.borderRadius.default, backgroundColor: toast.type === 'error' ? theme.colors.errorContainer : '#ecfdf5', color: toast.type === 'error' ? theme.colors.onErrorContainer : '#047857', boxShadow: theme.shadows.card, fontSize: '16px', fontWeight: 600 }}>
           {toast.msg}
         </div>
       )}
@@ -103,13 +103,13 @@ export default function ManajemenJadwal() {
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: 800, color: theme.colors.onSurface, margin: '0 0 0.25rem 0' }}>Manajemen Jadwal Mengajar</h1>
-          <p style={{ margin: 0, fontSize: '13px', color: theme.colors.onSurfaceVariant }}>Kelola jadwal mengajar dosen per hari dan gedung.</p>
+          <p style={{ margin: 0, fontSize: '16px', color: theme.colors.onSurfaceVariant }}>Kelola jadwal mengajar dosen per hari dan gedung.</p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button type="button" onClick={() => { setImportOpen(true); setImportResult(null); setImportError(''); }} style={{ padding: '0.7rem 1.2rem', borderRadius: theme.borderRadius.full, border: `1px solid ${theme.colors.primary}`, backgroundColor: theme.colors.primaryFixed, color: theme.colors.primary, fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
+          <button type="button" onClick={() => { setImportOpen(true); setImportResult(null); setImportError(''); }} style={{ padding: '0.7rem 1.2rem', borderRadius: theme.borderRadius.full, border: `1px solid ${theme.colors.primary}`, backgroundColor: theme.colors.primaryFixed, color: theme.colors.primary, fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}>
             Import CSV/Excel
           </button>
-          <button type="button" onClick={() => setModal({ data: null })} style={{ padding: '0.7rem 1.4rem', borderRadius: theme.borderRadius.full, border: 'none', background: theme.gradients.primaryCta, color: '#fff', fontWeight: 700, fontSize: '13px', cursor: 'pointer', boxShadow: theme.shadows.btnPrimary }}>
+          <button type="button" onClick={() => setModal({ data: null })} style={{ padding: '0.7rem 1.4rem', borderRadius: theme.borderRadius.full, border: 'none', background: theme.gradients.primaryCta, color: '#fff', fontWeight: 700, fontSize: '16px', cursor: 'pointer', boxShadow: theme.shadows.btnPrimary }}>
             + Tambah Jadwal
           </button>
         </div>
@@ -139,11 +139,11 @@ export default function ManajemenJadwal() {
                 <tr><td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: theme.colors.onSurfaceVariant }}>Belum ada jadwal.</td></tr>
               ) : list.map((j) => (
                 <tr key={j.id} style={{ borderTop: `1px solid ${theme.colors.surfaceContainer}` }}>
-                  <td style={{ padding: '0.85rem 1.25rem', fontSize: '13px', textTransform: 'capitalize' }}>{j.hari}</td>
-                  <td style={{ padding: '0.85rem 1.25rem', fontSize: '13px' }}>{String(j.jam_mulai).slice(0, 5)}–{String(j.jam_selesai).slice(0, 5)}</td>
-                  <td style={{ padding: '0.85rem 1.25rem', fontSize: '13px', fontWeight: 600 }}>{j.nama_dosen}</td>
-                  <td style={{ padding: '0.85rem 1.25rem', fontSize: '13px' }}>{j.mata_kuliah}</td>
-                  <td style={{ padding: '0.85rem 1.25rem', fontSize: '13px' }}>{j.nama_gedung}</td>
+                  <td style={{ padding: '0.85rem 1.25rem', fontSize: '16px', textTransform: 'capitalize' }}>{j.hari}</td>
+                  <td style={{ padding: '0.85rem 1.25rem', fontSize: '16px' }}>{String(j.jam_mulai).slice(0, 5)}–{String(j.jam_selesai).slice(0, 5)}</td>
+                  <td style={{ padding: '0.85rem 1.25rem', fontSize: '16px', fontWeight: 600 }}>{j.nama_dosen}</td>
+                  <td style={{ padding: '0.85rem 1.25rem', fontSize: '16px' }}>{j.mata_kuliah}</td>
+                  <td style={{ padding: '0.85rem 1.25rem', fontSize: '16px' }}>{j.nama_gedung}</td>
                   <td style={{ padding: '0.6rem 1.25rem', textAlign: 'right' }}>
                     <button type="button" onClick={() => setModal({ data: j })} style={{ marginRight: '0.4rem', background: 'none', border: 'none', cursor: 'pointer', color: theme.colors.primary }}>edit</button>
                     <button type="button" onClick={() => setDeleteTarget(j)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme.colors.error }}>delete</button>
@@ -160,7 +160,7 @@ export default function ManajemenJadwal() {
       {deleteTarget && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 200, backgroundColor: 'rgba(17,28,45,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ backgroundColor: theme.colors.surfaceContainerLowest, borderRadius: theme.borderRadius.lg, padding: '2rem', maxWidth: '380px', width: '90%' }}>
-            <p style={{ fontSize: '14px', color: theme.colors.onSurfaceVariant }}>Hapus jadwal "{deleteTarget.mata_kuliah}" ({deleteTarget.nama_dosen}, {deleteTarget.hari})?</p>
+            <p style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant }}>Hapus jadwal "{deleteTarget.mata_kuliah}" ({deleteTarget.nama_dosen}, {deleteTarget.hari})?</p>
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
               <button type="button" onClick={() => setDeleteTarget(null)} style={{ padding: '0.6rem 1.25rem', borderRadius: theme.borderRadius.full, border: `1px solid ${theme.colors.outlineVariant}`, background: 'transparent', cursor: 'pointer' }}>Batal</button>
               <button type="button" onClick={handleDelete} style={{ padding: '0.6rem 1.25rem', borderRadius: theme.borderRadius.full, border: 'none', backgroundColor: theme.colors.error, color: '#fff', cursor: 'pointer', fontWeight: 700 }}>Ya, Hapus</button>
@@ -173,15 +173,15 @@ export default function ManajemenJadwal() {
         <div style={{ position: 'fixed', inset: 0, zIndex: 200, backgroundColor: 'rgba(17,28,45,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ backgroundColor: theme.colors.surfaceContainerLowest, borderRadius: theme.borderRadius.lg, padding: '2rem', maxWidth: '460px', width: '90%' }}>
             <h3 style={{ marginTop: 0 }}>Import Jadwal dari CSV/Excel</h3>
-            <p style={{ fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+            <p style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant }}>
               Kolom: nip_dosen, hari, jam_mulai, jam_selesai, mata_kuliah, nama_gedung.{' '}
               <a href="/api/jadwal-mengajar/template" style={{ color: theme.colors.primary, fontWeight: 700 }} download>Download Template CSV</a>
             </p>
             <input type="file" accept=".csv,.xlsx,.xls" onChange={(e) => e.target.files[0] && handleImport(e.target.files[0])} />
-            {importing && <p style={{ fontSize: '13px' }}>Mengupload & memproses...</p>}
-            {importError && <p style={{ color: theme.colors.error, fontSize: '13px' }}>{importError}</p>}
+            {importing && <p style={{ fontSize: '16px' }}>Mengupload & memproses...</p>}
+            {importError && <p style={{ color: theme.colors.error, fontSize: '16px' }}>{importError}</p>}
             {importResult && (
-              <div style={{ fontSize: '13px', marginTop: '0.75rem' }}>
+              <div style={{ fontSize: '16px', marginTop: '0.75rem' }}>
                 <p style={{ margin: '0.25rem 0' }}>✅ Berhasil: <b>{importResult.berhasil}</b> baris</p>
                 <p style={{ margin: '0.25rem 0' }}>❌ Gagal: <b>{importResult.gagal_count}</b> baris</p>
                 {importResult.gagal?.length > 0 && (
@@ -239,7 +239,7 @@ function JadwalFormModal({ data, dosenList, gedungList, onClose, onSubmit }) {
           <option value="">-- Pilih Gedung --</option>
           {gedungList.map((g) => <option key={g.id} value={g.id}>{g.nama_gedung}</option>)}
         </select>
-        {error && <div style={{ color: theme.colors.error, fontSize: '13px' }}>{error}</div>}
+        {error && <div style={{ color: theme.colors.error, fontSize: '16px' }}>{error}</div>}
         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
           <button type="button" onClick={onClose} style={{ padding: '0.6rem 1.25rem', borderRadius: theme.borderRadius.full, border: `1px solid ${theme.colors.outlineVariant}`, background: 'transparent', cursor: 'pointer' }}>Batal</button>
           <button type="submit" disabled={saving} style={{ padding: '0.6rem 1.25rem', borderRadius: theme.borderRadius.full, border: 'none', background: theme.gradients.primaryCta, color: '#fff', cursor: 'pointer', fontWeight: 700 }}>{saving ? 'Menyimpan...' : 'Simpan'}</button>

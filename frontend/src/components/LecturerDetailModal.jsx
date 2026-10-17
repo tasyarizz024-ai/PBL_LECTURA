@@ -101,7 +101,7 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
             <span className="material-symbols-outlined animate-spin" style={{ fontSize: '32px', color: theme.colors.primary }}>
               progress_activity
             </span>
-            <p style={{ marginTop: '0.75rem', fontSize: '14px' }}>Memuat informasi dosen...</p>
+            <p style={{ marginTop: '0.75rem', fontSize: '16px' }}>Memuat informasi dosen...</p>
           </div>
         ) : error ? (
           <div style={{ textAlign: 'center', padding: '2rem 0' }}>
@@ -153,10 +153,10 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
                 <h2 style={{ fontSize: '18px', fontWeight: 800, color: theme.colors.onSurface, margin: 0 }}>
                   {detail.nama}
                 </h2>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: theme.colors.primary, marginTop: '2px' }}>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: theme.colors.primary, marginTop: '2px' }}>
                   {detail.prodi?.nama} {detail.jurusan?.nama ? `• ${detail.jurusan.nama}` : ''}
                 </div>
-                <div style={{ fontSize: '12px', color: theme.colors.onSurfaceVariant, marginTop: '2px' }}>
+                <div style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, marginTop: '2px' }}>
                   NIP: {detail.nip} | {detail.jabatan || 'Dosen Pengajar'}
                 </div>
               </div>
@@ -173,7 +173,7 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: theme.colors.onSurfaceVariant, letterSpacing: '0.04em' }}>
+                <span style={{ fontSize: '16px', fontWeight: 700, textTransform: 'uppercase', color: theme.colors.onSurfaceVariant, letterSpacing: '0.04em' }}>
                   Status Ketersediaan
                 </span>
                 <span
@@ -192,7 +192,7 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
                         : detail.status_terkini?.status_type === 'prediksi'
                         ? theme.colors.status.prediksi.text
                         : theme.colors.status.tidak_diketahui.text,
-                    fontSize: '11px',
+                    fontSize: '16px',
                     fontWeight: 700,
                   }}
                 >
@@ -220,12 +220,12 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
                   </span>
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: theme.colors.onSurface }}>
+                  <div style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface }}>
                     {detail.status_terkini?.lokasi_gedung?.nama_gedung || 'Lokasi belum terdeteksi (Off-campus)'}
                   </div>
               {/* Peta Lokasi Gedung */}
               {detail.status_terkini?.status_type === 'tidak_diketahui' || !detail.status_terkini?.lokasi_gedung?.latitude ? (
-                <div style={{ marginTop: '0.75rem', fontSize: '13px', color: theme.colors.outline, fontStyle: 'italic' }}>
+                <div style={{ marginTop: '0.75rem', fontSize: '16px', color: theme.colors.outline, fontStyle: 'italic' }}>
                   Lokasi tidak tersedia
                 </div>
               ) : (
@@ -241,7 +241,7 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
               </div>
 
               {detail.status_terkini?.last_updated && (
-                <div style={{ fontSize: '11px', color: theme.colors.outline, marginTop: '0.75rem', borderTop: `1px dashed ${theme.colors.outlineVariant}`, paddingTop: '0.5rem' }}>
+                <div style={{ fontSize: '16px', color: theme.colors.outline, marginTop: '0.75rem', borderTop: `1px dashed ${theme.colors.outlineVariant}`, paddingTop: '0.5rem' }}>
                   Pembaruan terakhir: {new Date(detail.status_terkini.last_updated).toLocaleString('id-ID')}
                 </div>
               )}
@@ -250,7 +250,7 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
             {/* Jadwal Mengajar Hari Ini */}
             <div style={{ marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, color: theme.colors.onSurface, margin: 0, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface, margin: 0, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: '18px', color: theme.colors.primary }}>
                     calendar_today
                   </span>
@@ -274,16 +274,16 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
                       }}
                     >
                       <div>
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: theme.colors.onSurface }}>
+                        <div style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface }}>
                           {j.mata_kuliah}
                         </div>
-                        <div style={{ fontSize: '11px', color: theme.colors.onSurfaceVariant, marginTop: '2px' }}>
+                        <div style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, marginTop: '2px' }}>
                           {j.nama_gedung}
                         </div>
                       </div>
                       <div
                         style={{
-                          fontSize: '12px',
+                          fontSize: '16px',
                           fontWeight: 700,
                           color: theme.colors.primary,
                           padding: '0.2rem 0.5rem',
@@ -303,7 +303,7 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
                     borderRadius: theme.borderRadius.sm,
                     backgroundColor: theme.colors.surfaceContainerLow,
                     color: theme.colors.onSurfaceVariant,
-                    fontSize: '12px',
+                    fontSize: '16px',
                     textAlign: 'center',
                   }}
                 >
@@ -318,7 +318,7 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
                 <span className="material-symbols-outlined" style={{ fontSize: '18px', color: theme.colors.primary }}>
                   auto_awesome
                 </span>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, color: theme.colors.onSurface, margin: 0 }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface, margin: 0 }}>
                   Jadwal Prediksi Hari Ini
                 </h3>
               </div>
@@ -338,16 +338,16 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
                       }}
                     >
                       <div>
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: theme.colors.onSurface }}>
+                        <div style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface }}>
                           {p.nama_gedung}
                         </div>
-                        <div style={{ fontSize: '11px', color: theme.colors.onSurfaceVariant, marginTop: '2px' }}>
+                        <div style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, marginTop: '2px' }}>
                           Kebiasaan terprediksi · {Math.round(Number(p.probabilitas))}%
                         </div>
                       </div>
                       <div
                         style={{
-                          fontSize: '12px',
+                          fontSize: '16px',
                           fontWeight: 700,
                           color: theme.colors.primary,
                           padding: '0.2rem 0.5rem',
@@ -367,7 +367,7 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
                     borderRadius: theme.borderRadius.sm,
                     backgroundColor: theme.colors.surfaceContainerLow,
                     color: theme.colors.onSurfaceVariant,
-                    fontSize: '12px',
+                    fontSize: '16px',
                     textAlign: 'center',
                   }}
                 >
@@ -389,7 +389,7 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
                 backgroundColor: showWeekly ? theme.colors.primaryFixed : 'transparent',
                 color: theme.colors.primary,
                 fontWeight: 700,
-                fontSize: '13px',
+                fontSize: '16px',
                 cursor: 'pointer',
               }}
             >
@@ -404,16 +404,16 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
                   if (prediksi.length === 0 && resmi.length === 0) return null;
                   return (
                     <div key={hari} style={{ marginBottom: '0.9rem' }}>
-                      <div style={{ fontSize: '12px', fontWeight: 800, textTransform: 'capitalize', color: theme.colors.onSurface, marginBottom: '0.4rem' }}>
+                      <div style={{ fontSize: '16px', fontWeight: 800, textTransform: 'capitalize', color: theme.colors.onSurface, marginBottom: '0.4rem' }}>
                         {hari}
                       </div>
                       {prediksi.map((p, i) => (
-                        <div key={`p${i}`} style={{ fontSize: '12px', color: theme.colors.onSurfaceVariant, padding: '0.15rem 0' }}>
+                        <div key={`p${i}`} style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, padding: '0.15rem 0' }}>
                           🔮 {p.jam_mulai.slice(0, 5)}–{p.jam_selesai.slice(0, 5)} · {p.nama_gedung} · {Math.round(Number(p.probabilitas))}%
                         </div>
                       ))}
                       {resmi.map((j, i) => (
-                        <div key={`r${i}`} style={{ fontSize: '12px', color: theme.colors.onSurfaceVariant, padding: '0.15rem 0' }}>
+                        <div key={`r${i}`} style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, padding: '0.15rem 0' }}>
                           📚 {j.jam_mulai.slice(0, 5)}–{j.jam_selesai.slice(0, 5)} · {j.mata_kuliah} · {j.nama_gedung}
                         </div>
                       ))}
@@ -435,7 +435,7 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
                 color: theme.colors.onSurface,
                 border: 'none',
                 fontWeight: 700,
-                fontSize: '13px',
+                fontSize: '16px',
                 cursor: 'pointer',
               }}
             >

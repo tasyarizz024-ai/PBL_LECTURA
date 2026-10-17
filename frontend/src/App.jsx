@@ -72,7 +72,7 @@ function App() {
               backgroundColor: theme.colors.errorContainer,
               color: theme.colors.onErrorContainer,
               boxShadow: theme.shadows.card,
-              fontSize: '13px',
+              fontSize: '16px',
               fontWeight: 600,
             }}
           >

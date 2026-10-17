@@ -88,7 +88,11 @@ export default function MahasiswaDashboard() {
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1.5rem 4rem' }}>
       {/* 1. Header & Chip Portal Mahasiswa */}
-      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '2.5rem', position: 'relative' }}>
+        {/* Dekorasi ambient blob (glassmorphism) */}
+        <div className="animate-float-slow" style={{ position: 'absolute', top: '-3rem', left: '-2rem', width: '180px', height: '180px', borderRadius: '50%', backgroundColor: 'rgba(225, 224, 255, 0.7)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
+        <div className="animate-float-reverse" style={{ position: 'absolute', top: '-2rem', right: '-2rem', width: '200px', height: '200px', borderRadius: '50%', backgroundColor: 'rgba(233, 221, 255, 0.6)', filter: 'blur(70px)', pointerEvents: 'none', zIndex: 0 }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
         <div
           style={{
             display: 'inline-flex',
@@ -98,7 +102,7 @@ export default function MahasiswaDashboard() {
             borderRadius: theme.borderRadius.full,
             backgroundColor: theme.colors.surfaceContainerHigh,
             color: theme.colors.primary,
-            fontSize: '12px',
+            fontSize: '16px',
             fontWeight: 700,
             marginBottom: '1rem',
           }}
@@ -111,7 +115,7 @@ export default function MahasiswaDashboard() {
 
         <h1
           style={{
-            fontSize: '32px',
+            fontSize: '40px',
             fontWeight: 800,
             letterSpacing: '-0.02em',
             color: theme.colors.onSurface,
@@ -120,9 +124,10 @@ export default function MahasiswaDashboard() {
         >
           Temukan & Pantau Keberadaan Dosen Kampus
         </h1>
-        <p style={{ fontSize: '15px', color: theme.colors.onSurfaceVariant, margin: 0 }}>
+        <p style={{ fontSize: '17px', color: theme.colors.onSurfaceVariant, margin: 0, fontWeight: 500 }}>
           Cari dosen berdasarkan nama, NIP, atau program studi untuk melihat status ketersediaan di ruangan kampus.
         </p>
+        </div>
       </div>
 
       {/* 2. Search Bar */}
@@ -157,7 +162,7 @@ export default function MahasiswaDashboard() {
             flex: 1,
             border: 'none',
             outline: 'none',
-            fontSize: '14px',
+            fontSize: '16px',
             backgroundColor: 'transparent',
             color: theme.colors.onSurface,
             fontFamily: theme.typography.fontFamily.base,
@@ -192,7 +197,7 @@ export default function MahasiswaDashboard() {
             border: 'none',
             borderRadius: theme.borderRadius.full,
             padding: '0.65rem 1.25rem',
-            fontSize: '13px',
+            fontSize: '16px',
             fontWeight: 700,
             cursor: 'pointer',
             display: 'flex',
@@ -218,13 +223,13 @@ export default function MahasiswaDashboard() {
             style={{
               padding: '0.4rem 1rem',
               borderRadius: theme.borderRadius.full,
-              fontSize: '12px',
+              fontSize: '16px',
               fontWeight: 600,
               cursor: 'pointer',
-              border: 'none',
-              backgroundColor: selectedProdiId === '' ? theme.colors.primary : theme.colors.surfaceContainerLowest,
-              color: selectedProdiId === '' ? '#ffffff' : theme.colors.onSurfaceVariant,
-              boxShadow: selectedProdiId === '' ? theme.shadows.btnPrimary : theme.shadows.cardSm,
+              border: selectedProdiId === '' ? 'none' : `1px solid ${theme.colors.outlineVariant}`,
+              background: selectedProdiId === '' ? theme.gradients.primaryCta : theme.colors.surfaceContainerLowest,
+              color: selectedProdiId === '' ? '#ffffff' : theme.colors.onSurface,
+              boxShadow: selectedProdiId === '' ? theme.shadows.btnPrimary : 'none',
               transition: 'all 0.2s ease',
             }}
           >
@@ -240,13 +245,13 @@ export default function MahasiswaDashboard() {
                 style={{
                   padding: '0.4rem 1rem',
                   borderRadius: theme.borderRadius.full,
-                  fontSize: '12px',
+                  fontSize: '16px',
                   fontWeight: 600,
                   cursor: 'pointer',
-                  border: 'none',
-                  backgroundColor: isSelected ? theme.colors.primary : theme.colors.surfaceContainerLowest,
-                  color: isSelected ? '#ffffff' : theme.colors.onSurfaceVariant,
-                  boxShadow: isSelected ? theme.shadows.btnPrimary : theme.shadows.cardSm,
+                  border: isSelected ? 'none' : `1px solid ${theme.colors.outlineVariant}`,
+                  background: isSelected ? theme.gradients.primaryCta : theme.colors.surfaceContainerLowest,
+                  color: isSelected ? '#ffffff' : theme.colors.onSurface,
+                  boxShadow: isSelected ? theme.shadows.btnPrimary : 'none',
                   transition: 'all 0.2s ease',
                 }}
               >
@@ -258,7 +263,7 @@ export default function MahasiswaDashboard() {
 
         {/* Status Dropdown Filter */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '12px', color: theme.colors.onSurfaceVariant, fontWeight: 600 }}>
+          <span style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, fontWeight: 600 }}>
             Filter Status:
           </span>
           <select
@@ -271,7 +276,7 @@ export default function MahasiswaDashboard() {
               border: `1px solid ${theme.colors.surfaceContainerHighest}`,
               backgroundColor: theme.colors.surfaceContainerLowest,
               color: theme.colors.onSurface,
-              fontSize: '12px',
+              fontSize: '16px',
               fontWeight: 600,
               outline: 'none',
               cursor: 'pointer',
@@ -287,7 +292,7 @@ export default function MahasiswaDashboard() {
 
       {/* 4. Results Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-        <div style={{ fontSize: '13px', fontWeight: 600, color: theme.colors.onSurfaceVariant }}>
+        <div style={{ fontSize: '16px', fontWeight: 600, color: theme.colors.onSurfaceVariant }}>
           Menampilkan <strong style={{ color: theme.colors.primary }}>{lecturers.length}</strong> dosen
         </div>
       </div>
@@ -298,7 +303,7 @@ export default function MahasiswaDashboard() {
           <span className="material-symbols-outlined animate-spin" style={{ fontSize: '36px', color: theme.colors.primary }}>
             progress_activity
           </span>
-          <p style={{ marginTop: '0.75rem', fontSize: '14px' }}>Memuat data ketersediaan dosen...</p>
+          <p style={{ marginTop: '0.75rem', fontSize: '16px' }}>Memuat data ketersediaan dosen...</p>
         </div>
       ) : error ? (
         <div
@@ -328,7 +333,7 @@ export default function MahasiswaDashboard() {
           <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0.75rem 0 0.25rem 0' }}>
             Tidak ada dosen yang cocok
           </h3>
-          <p style={{ fontSize: '13px', color: theme.colors.onSurfaceVariant, margin: 0 }}>
+          <p style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, margin: 0 }}>
             Coba ubah kata kunci pencarian atau reset filter program studi.
           </p>
         </div>

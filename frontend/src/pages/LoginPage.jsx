@@ -147,7 +147,7 @@ export default function LoginPage({ onLoginSuccess }) {
           >
             LECTURA
           </h1>
-          <p style={{ fontSize: '13px', color: theme.colors.onSurfaceVariant, margin: 0 }}>
+          <p style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, margin: 0 }}>
             Sistem Presensi & Pelacakan Dosen
           </p>
         </div>
@@ -178,7 +178,7 @@ export default function LoginPage({ onLoginSuccess }) {
                 borderRadius: theme.borderRadius.full,
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: '13px',
+                fontSize: '16px',
                 fontWeight: 700,
                 fontFamily: theme.typography.fontFamily.base,
                 transition: 'all 0.22s ease',
@@ -201,7 +201,7 @@ export default function LoginPage({ onLoginSuccess }) {
           <div>
             <label
               htmlFor="login-identifier"
-              style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}
+              style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}
             >
               {activeTab === 'mahasiswa' ? 'NIM atau Email Kampus' : 'Email Admin'}
             </label>
@@ -230,7 +230,7 @@ export default function LoginPage({ onLoginSuccess }) {
                   flex: 1,
                   border: 'none',
                   outline: 'none',
-                  fontSize: '14px',
+                  fontSize: '16px',
                   padding: '0.85rem 0',
                   backgroundColor: 'transparent',
                   color: theme.colors.onSurface,
@@ -245,7 +245,7 @@ export default function LoginPage({ onLoginSuccess }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
               <label
                 htmlFor="login-password"
-                style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurfaceVariant }}
+                style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant }}
               >
                 Password
               </label>
@@ -256,7 +256,7 @@ export default function LoginPage({ onLoginSuccess }) {
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
-                  fontSize: '11px',
+                  fontSize: '16px',
                   color: theme.colors.primary,
                   fontWeight: 600,
                   fontFamily: theme.typography.fontFamily.base,
@@ -290,7 +290,7 @@ export default function LoginPage({ onLoginSuccess }) {
                   flex: 1,
                   border: 'none',
                   outline: 'none',
-                  fontSize: '14px',
+                  fontSize: '16px',
                   padding: '0.85rem 0',
                   backgroundColor: 'transparent',
                   color: theme.colors.onSurface,
@@ -317,7 +317,7 @@ export default function LoginPage({ onLoginSuccess }) {
                 color: theme.colors.onErrorContainer,
                 borderRadius: theme.borderRadius.default,
                 padding: '0.75rem 1rem',
-                fontSize: '13px',
+                fontSize: '16px',
                 fontWeight: 500,
                 display: 'flex',
                 alignItems: 'center',
@@ -338,7 +338,7 @@ export default function LoginPage({ onLoginSuccess }) {
                 color: theme.colors.primary,
                 borderRadius: theme.borderRadius.default,
                 padding: '0.75rem 1rem',
-                fontSize: '12px',
+                fontSize: '16px',
                 fontWeight: 500,
                 lineHeight: 1.5,
                 display: 'flex',
@@ -406,7 +406,7 @@ export default function LoginPage({ onLoginSuccess }) {
           style={{
             textAlign: 'center',
             marginTop: '1.5rem',
-            fontSize: '11px',
+            fontSize: '16px',
             color: theme.colors.outlineVariant,
             lineHeight: 1.6,
           }}

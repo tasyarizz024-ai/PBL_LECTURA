@@ -25,7 +25,7 @@ export default function LecturerCard({ lecturer, onSelect }) {
         borderRadius: theme.borderRadius.default,
         border: `1px solid ${theme.colors.surfaceContainer}`,
         boxShadow: theme.shadows.cardSm,
-        padding: '1.25rem',
+        padding: '1.5rem',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -84,7 +84,7 @@ export default function LecturerCard({ lecturer, onSelect }) {
               backgroundColor: statusConfig.bg,
               border: `1px solid ${statusConfig.border}`,
               color: statusConfig.text,
-              fontSize: '11px',
+              fontSize: '16px',
               fontWeight: 700,
               display: 'inline-flex',
               alignItems: 'center',
@@ -92,7 +92,7 @@ export default function LecturerCard({ lecturer, onSelect }) {
             }}
           >
             {status_type === 'prediksi' ? (
-              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
                 bolt
               </span>
             ) : (
@@ -115,8 +115,8 @@ export default function LecturerCard({ lecturer, onSelect }) {
         {/* Lecturer Name & Title */}
         <h3
           style={{
-            fontSize: '15px',
-            fontWeight: 700,
+            fontSize: '19px',
+            fontWeight: 800,
             color: theme.colors.onSurface,
             margin: '0 0 0.25rem 0',
             lineHeight: 1.3,
@@ -128,7 +128,7 @@ export default function LecturerCard({ lecturer, onSelect }) {
         {/* Prodi / Jurusan */}
         <p
           style={{
-            fontSize: '12px',
+            fontSize: '16px',
             color: theme.colors.primary,
             fontWeight: 600,
             margin: '0 0 0.25rem 0',
@@ -140,8 +140,8 @@ export default function LecturerCard({ lecturer, onSelect }) {
         {/* NIP & Jabatan */}
         <p
           style={{
-            fontSize: '11px',
-            color: theme.colors.onSurfaceVariant,
+            fontSize: '16px',
+            color: theme.colors.outline,
             margin: '0 0 1rem 0',
           }}
         >
@@ -160,7 +160,7 @@ export default function LecturerCard({ lecturer, onSelect }) {
         >
           <div
             style={{
-              fontSize: '10px',
+              fontSize: '12px',
               fontWeight: 600,
               color: theme.colors.onSurfaceVariant,
               display: 'flex',
@@ -171,7 +171,7 @@ export default function LecturerCard({ lecturer, onSelect }) {
               letterSpacing: '0.04em',
             }}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
               near_me
             </span>
             <span>
@@ -184,7 +184,7 @@ export default function LecturerCard({ lecturer, onSelect }) {
           </div>
           <div
             style={{
-              fontSize: '13px',
+              fontSize: '16px',
               fontWeight: 700,
               color: nama_gedung ? theme.colors.onSurface : theme.colors.outline,
             }}
@@ -206,7 +206,7 @@ export default function LecturerCard({ lecturer, onSelect }) {
           backgroundColor: theme.colors.surfaceContainerHigh,
           color: theme.colors.primary,
           border: 'none',
-          fontSize: '12px',
+          fontSize: '16px',
           fontWeight: 700,
           cursor: 'pointer',
           display: 'flex',

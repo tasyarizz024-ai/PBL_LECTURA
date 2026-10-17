@@ -65,7 +65,7 @@ export default function AdminLayout({ activePage, onNavigate, user, onLogout, ch
               <div style={{ fontSize: '17px', fontWeight: 800, letterSpacing: '-0.02em', color: theme.colors.primary }}>
                 LECTURA
               </div>
-              <div style={{ fontSize: '10px', fontWeight: 600, color: theme.colors.onSurfaceVariant, letterSpacing: '0.02em' }}>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: theme.colors.onSurfaceVariant, letterSpacing: '0.02em' }}>
                 ADMIN PANEL
               </div>
             </div>
@@ -91,7 +91,7 @@ export default function AdminLayout({ activePage, onNavigate, user, onLogout, ch
                   border: 'none',
                   cursor: 'pointer',
                   fontFamily: theme.typography.fontFamily.base,
-                  fontSize: '13px',
+                  fontSize: '16px',
                   fontWeight: isActive ? 700 : 500,
                   justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
                   backgroundColor: isActive ? theme.colors.primaryFixed : 'transparent',
@@ -165,10 +165,10 @@ export default function AdminLayout({ activePage, onNavigate, user, onLogout, ch
           </div>
           {!sidebarCollapsed && (
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurface, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {user?.nama || 'Administrator'}
               </div>
-              <div style={{ fontSize: '10px', color: theme.colors.onSurfaceVariant }}>Admin</div>
+              <div style={{ fontSize: '12px', color: theme.colors.onSurfaceVariant }}>Admin</div>
             </div>
           )}
           {!sidebarCollapsed && (
@@ -228,7 +228,7 @@ export default function AdminLayout({ activePage, onNavigate, user, onLogout, ch
               onClick={onLogout}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '15px', color: theme.colors.error }}>logout</span>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.error }}>Keluar</span>
+              <span style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.error }}>Keluar</span>
             </div>
           </div>
         </header>

@@ -34,7 +34,7 @@ function StatCard({ icon, label, value, gradient, loading }) {
         <span className="material-symbols-outlined" style={{ fontSize: '26px' }}>{icon}</span>
       </div>
       <div>
-        <div style={{ fontSize: '11px', fontWeight: 700, color: theme.colors.onSurfaceVariant, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>
+        <div style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>
           {label}
         </div>
         {loading ? (
@@ -119,13 +119,13 @@ export default function AdminDashboard() {
         }}
       >
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, opacity: 0.8, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.4rem' }}>
+          <div style={{ fontSize: '16px', fontWeight: 700, opacity: 0.8, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.4rem' }}>
             LECTURA Admin Panel
           </div>
           <h1 style={{ fontSize: '22px', fontWeight: 800, margin: '0 0 0.35rem 0', letterSpacing: '-0.02em' }}>
             Selamat datang, Administrator 👋
           </h1>
-          <p style={{ margin: 0, opacity: 0.85, fontSize: '13px' }}>
+          <p style={{ margin: 0, opacity: 0.85, fontSize: '16px' }}>
             Pantau dan kelola data dosen, gedung, serta aktivitas presensi dari sini.
           </p>
         </div>
@@ -197,7 +197,7 @@ export default function AdminDashboard() {
             <span className="material-symbols-outlined animate-spin" style={{ fontSize: '28px', color: theme.colors.primary }}>progress_activity</span>
           </div>
         ) : recentLogs.length === 0 ? (
-          <div style={{ padding: '2.5rem', textAlign: 'center', color: theme.colors.onSurfaceVariant, fontSize: '13px' }}>
+          <div style={{ padding: '2.5rem', textAlign: 'center', color: theme.colors.onSurfaceVariant, fontSize: '16px' }}>
             Belum ada log aktivitas tersedia.
           </div>
         ) : (
@@ -211,7 +211,7 @@ export default function AdminDashboard() {
                       style={{
                         padding: '0.75rem 1.25rem',
                         textAlign: 'left',
-                        fontSize: '11px',
+                        fontSize: '16px',
                         fontWeight: 700,
                         color: theme.colors.onSurfaceVariant,
                         textTransform: 'uppercase',
@@ -235,10 +235,10 @@ export default function AdminDashboard() {
                         transition: 'background 0.15s',
                       }}
                     >
-                      <td style={{ padding: '0.9rem 1.25rem', fontSize: '13px', fontWeight: 600, color: theme.colors.onSurface }}>
+                      <td style={{ padding: '0.9rem 1.25rem', fontSize: '16px', fontWeight: 600, color: theme.colors.onSurface }}>
                         {log.nama_dosen || '—'}
                       </td>
-                      <td style={{ padding: '0.9rem 1.25rem', fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+                      <td style={{ padding: '0.9rem 1.25rem', fontSize: '16px', color: theme.colors.onSurfaceVariant }}>
                         {log.nama_gedung || '—'}
                       </td>
                       <td style={{ padding: '0.9rem 1.25rem' }}>
@@ -247,7 +247,7 @@ export default function AdminDashboard() {
                             display: 'inline-block',
                             padding: '0.25rem 0.75rem',
                             borderRadius: theme.borderRadius.full,
-                            fontSize: '11px',
+                            fontSize: '16px',
                             fontWeight: 700,
                             backgroundColor: st.bg,
                             color: st.color,
@@ -256,7 +256,7 @@ export default function AdminDashboard() {
                           {st.label}
                         </span>
                       </td>
-                      <td style={{ padding: '0.9rem 1.25rem', fontSize: '12px', color: theme.colors.outline, whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: '0.9rem 1.25rem', fontSize: '16px', color: theme.colors.outline, whiteSpace: 'nowrap' }}>
                         {log.waktu_log
                           ? new Date(log.waktu_log).toLocaleString('id-ID', {
                               day: '2-digit',

@@ -36,7 +36,7 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
           <span className="material-symbols-outlined" style={{ fontSize: '28px', color: theme.colors.error }}>delete_forever</span>
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface, margin: 0 }}>Konfirmasi Hapus</h3>
         </div>
-        <p style={{ fontSize: '14px', color: theme.colors.onSurfaceVariant, marginBottom: '1.5rem', lineHeight: 1.6 }}>
+        <p style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, marginBottom: '1.5rem', lineHeight: 1.6 }}>
           {message}
         </p>
         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
@@ -47,7 +47,7 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
               padding: '0.6rem 1.25rem', borderRadius: theme.borderRadius.full,
               border: `1px solid ${theme.colors.outlineVariant}`,
               backgroundColor: 'transparent', cursor: 'pointer',
-              fontSize: '13px', fontWeight: 600,
+              fontSize: '16px', fontWeight: 600,
               color: theme.colors.onSurfaceVariant,
               fontFamily: theme.typography.fontFamily.base,
             }}
@@ -60,7 +60,7 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
             style={{
               padding: '0.6rem 1.25rem', borderRadius: theme.borderRadius.full,
               border: 'none', backgroundColor: theme.colors.error, color: '#fff',
-              cursor: 'pointer', fontSize: '13px', fontWeight: 700,
+              cursor: 'pointer', fontSize: '16px', fontWeight: 700,
               fontFamily: theme.typography.fontFamily.base,
               boxShadow: '0 4px 12px rgba(186,26,26,0.3)',
             }}
@@ -124,7 +124,7 @@ function DosenFormModal({ isOpen, dosenData, prodiList, onClose, onSaved }) {
     borderRadius: theme.borderRadius.default,
     border: `1.5px solid ${theme.colors.surfaceContainerHighest}`,
     backgroundColor: theme.colors.surfaceContainerLowest,
-    fontSize: '14px',
+    fontSize: '16px',
     color: theme.colors.onSurface,
     fontFamily: theme.typography.fontFamily.base,
     outline: 'none',
@@ -167,31 +167,31 @@ function DosenFormModal({ isOpen, dosenData, prodiList, onClose, onSaved }) {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
               Nama Lengkap *
             </label>
             <input value={form.nama} onChange={handleChange('nama')} placeholder="Dr. Nama Dosen, M.Kom." style={fieldStyle} />
           </div>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
               NIP *
             </label>
             <input value={form.nip} onChange={handleChange('nip')} placeholder="198001012010011001" style={fieldStyle} />
           </div>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
               Email Kampus *
             </label>
             <input type="email" value={form.email} onChange={handleChange('email')} placeholder="nama.dosen@polinela.ac.id" style={fieldStyle} />
           </div>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
               Jabatan
             </label>
             <input value={form.jabatan} onChange={handleChange('jabatan')} placeholder="Lektor Kepala" style={fieldStyle} />
           </div>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
               Program Studi
             </label>
             <select value={form.prodi_id} onChange={handleChange('prodi_id')} style={fieldStyle}>
@@ -202,7 +202,7 @@ function DosenFormModal({ isOpen, dosenData, prodiList, onClose, onSaved }) {
             </select>
           </div>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
               URL Foto (opsional)
             </label>
             <input value={form.foto} onChange={handleChange('foto')} placeholder="https://..." style={fieldStyle} />
@@ -215,7 +215,7 @@ function DosenFormModal({ isOpen, dosenData, prodiList, onClose, onSaved }) {
                 color: theme.colors.onErrorContainer,
                 borderRadius: theme.borderRadius.default,
                 padding: '0.75rem 1rem',
-                fontSize: '13px',
+                fontSize: '16px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
@@ -234,7 +234,7 @@ function DosenFormModal({ isOpen, dosenData, prodiList, onClose, onSaved }) {
                 padding: '0.7rem 1.5rem', borderRadius: theme.borderRadius.full,
                 border: `1px solid ${theme.colors.outlineVariant}`,
                 backgroundColor: 'transparent', cursor: 'pointer',
-                fontSize: '13px', fontWeight: 600,
+                fontSize: '16px', fontWeight: 600,
                 color: theme.colors.onSurfaceVariant,
                 fontFamily: theme.typography.fontFamily.base,
               }}
@@ -250,7 +250,7 @@ function DosenFormModal({ isOpen, dosenData, prodiList, onClose, onSaved }) {
                 background: saving ? theme.colors.surfaceContainerHigh : theme.gradients.primaryCta,
                 color: saving ? theme.colors.onSurfaceVariant : '#fff',
                 cursor: saving ? 'not-allowed' : 'pointer',
-                fontSize: '13px', fontWeight: 700,
+                fontSize: '16px', fontWeight: 700,
                 fontFamily: theme.typography.fontFamily.base,
                 boxShadow: saving ? 'none' : theme.shadows.btnPrimary,
                 display: 'flex', alignItems: 'center', gap: '0.4rem',
@@ -350,7 +350,7 @@ export default function ManajemenDosen() {
             backgroundColor: toast.type === 'error' ? theme.colors.errorContainer : '#ecfdf5',
             color: toast.type === 'error' ? theme.colors.onErrorContainer : '#047857',
             boxShadow: theme.shadows.card,
-            fontSize: '13px', fontWeight: 600,
+            fontSize: '16px', fontWeight: 600,
             display: 'flex', alignItems: 'center', gap: '0.5rem',
             animation: 'slideUp 0.3s ease',
           }}
@@ -366,7 +366,7 @@ export default function ManajemenDosen() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: 800, color: theme.colors.onSurface, margin: '0 0 0.25rem 0' }}>Manajemen Dosen</h1>
-          <p style={{ margin: 0, fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+          <p style={{ margin: 0, fontSize: '16px', color: theme.colors.onSurfaceVariant }}>
             Kelola data dosen: tambah, edit, dan hapus.
           </p>
         </div>
@@ -380,7 +380,7 @@ export default function ManajemenDosen() {
             border: 'none',
             background: theme.gradients.primaryCta,
             color: '#fff', cursor: 'pointer',
-            fontSize: '13px', fontWeight: 700,
+            fontSize: '16px', fontWeight: 700,
             fontFamily: theme.typography.fontFamily.base,
             boxShadow: theme.shadows.btnPrimary,
           }}
@@ -423,7 +423,7 @@ export default function ManajemenDosen() {
               style={{
                 flex: 1, border: 'none', outline: 'none',
                 backgroundColor: 'transparent',
-                fontSize: '13px', color: theme.colors.onSurface,
+                fontSize: '16px', color: theme.colors.onSurface,
                 fontFamily: theme.typography.fontFamily.base,
                 padding: '0.65rem 0',
               }}
@@ -434,7 +434,7 @@ export default function ManajemenDosen() {
             style={{
               padding: '0.6rem 1.1rem', borderRadius: theme.borderRadius.full,
               border: 'none', background: theme.gradients.primaryCta,
-              color: '#fff', cursor: 'pointer', fontSize: '13px', fontWeight: 700,
+              color: '#fff', cursor: 'pointer', fontSize: '16px', fontWeight: 700,
               fontFamily: theme.typography.fontFamily.base,
             }}
           >
@@ -451,7 +451,7 @@ export default function ManajemenDosen() {
             border: `1px solid ${theme.colors.surfaceContainerHighest}`,
             backgroundColor: theme.colors.surfaceContainerLow,
             color: theme.colors.onSurface,
-            fontSize: '13px', fontWeight: 600,
+            fontSize: '16px', fontWeight: 600,
             fontFamily: theme.typography.fontFamily.base,
             outline: 'none', cursor: 'pointer',
           }}
@@ -482,7 +482,7 @@ export default function ManajemenDosen() {
                     style={{
                       padding: '0.85rem 1.25rem',
                       textAlign: h === 'Aksi' ? 'center' : 'left',
-                      fontSize: '11px', fontWeight: 700,
+                      fontSize: '16px', fontWeight: 700,
                       color: theme.colors.onSurfaceVariant,
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em',
@@ -503,7 +503,7 @@ export default function ManajemenDosen() {
                 </tr>
               ) : dosenList.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ padding: '3rem', textAlign: 'center', color: theme.colors.onSurfaceVariant, fontSize: '13px' }}>
+                  <td colSpan={5} style={{ padding: '3rem', textAlign: 'center', color: theme.colors.onSurfaceVariant, fontSize: '16px' }}>
                     Tidak ada dosen yang ditemukan.
                   </td>
                 </tr>
@@ -529,13 +529,13 @@ export default function ManajemenDosen() {
                             <span className="material-symbols-outlined" style={{ fontSize: '20px', color: theme.colors.outline }}>person</span>
                           )}
                         </div>
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: theme.colors.onSurface }}>{d.nama}</span>
+                        <span style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface }}>{d.nama}</span>
                       </div>
                     </td>
-                    <td style={{ padding: '0.9rem 1.25rem', fontSize: '12px', color: theme.colors.onSurfaceVariant, fontFamily: 'monospace' }}>
+                    <td style={{ padding: '0.9rem 1.25rem', fontSize: '16px', color: theme.colors.onSurfaceVariant, fontFamily: 'monospace' }}>
                       {d.nip || '—'}
                     </td>
-                    <td style={{ padding: '0.9rem 1.25rem', fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+                    <td style={{ padding: '0.9rem 1.25rem', fontSize: '16px', color: theme.colors.onSurfaceVariant }}>
                       {d.jabatan || '—'}
                     </td>
                     <td style={{ padding: '0.9rem 1.25rem' }}>
@@ -544,7 +544,7 @@ export default function ManajemenDosen() {
                           style={{
                             padding: '0.2rem 0.75rem',
                             borderRadius: theme.borderRadius.full,
-                            fontSize: '11px', fontWeight: 700,
+                            fontSize: '16px', fontWeight: 700,
                             backgroundColor: theme.colors.primaryFixed,
                             color: theme.colors.primary,
                           }}
@@ -565,11 +565,11 @@ export default function ManajemenDosen() {
                             border: `1px solid ${theme.colors.primary}`,
                             backgroundColor: theme.colors.primaryFixed,
                             color: theme.colors.primary,
-                            cursor: 'pointer', fontSize: '12px', fontWeight: 700,
+                            cursor: 'pointer', fontSize: '16px', fontWeight: 700,
                             fontFamily: theme.typography.fontFamily.base,
                           }}
                         >
-                          <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>edit</span>
+                          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>edit</span>
                           Edit
                         </button>
                         <button
@@ -582,11 +582,11 @@ export default function ManajemenDosen() {
                             border: `1px solid ${theme.colors.error}`,
                             backgroundColor: theme.colors.errorContainer,
                             color: theme.colors.error,
-                            cursor: 'pointer', fontSize: '12px', fontWeight: 700,
+                            cursor: 'pointer', fontSize: '16px', fontWeight: 700,
                             fontFamily: theme.typography.fontFamily.base,
                           }}
                         >
-                          <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>delete</span>
+                          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
                           Hapus
                         </button>
                       </div>

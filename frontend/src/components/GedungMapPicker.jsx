@@ -97,7 +97,7 @@ export default function GedungMapPicker({ latitude, longitude, radiusMeter, onCh
           alignItems: 'center',
           padding: '0.5rem 0.75rem',
           backgroundColor: theme.colors.surfaceContainerLow,
-          fontSize: '12px',
+          fontSize: '16px',
           fontFamily: 'monospace',
           color: theme.colors.onSurfaceVariant,
         }}

@@ -35,7 +35,7 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
           <span className="material-symbols-outlined" style={{ fontSize: '28px', color: theme.colors.error }}>delete_forever</span>
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface, margin: 0 }}>Konfirmasi Hapus</h3>
         </div>
-        <p style={{ fontSize: '14px', color: theme.colors.onSurfaceVariant, marginBottom: '1.5rem', lineHeight: 1.6 }}>
+        <p style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, marginBottom: '1.5rem', lineHeight: 1.6 }}>
           {message}
         </p>
         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
@@ -46,7 +46,7 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
               padding: '0.6rem 1.25rem', borderRadius: theme.borderRadius.full,
               border: `1px solid ${theme.colors.outlineVariant}`,
               backgroundColor: 'transparent', cursor: 'pointer',
-              fontSize: '13px', fontWeight: 600,
+              fontSize: '16px', fontWeight: 600,
               color: theme.colors.onSurfaceVariant,
               fontFamily: theme.typography.fontFamily.base,
             }}
@@ -59,7 +59,7 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
             style={{
               padding: '0.6rem 1.25rem', borderRadius: theme.borderRadius.full,
               border: 'none', backgroundColor: theme.colors.error, color: '#fff',
-              cursor: 'pointer', fontSize: '13px', fontWeight: 700,
+              cursor: 'pointer', fontSize: '16px', fontWeight: 700,
               fontFamily: theme.typography.fontFamily.base,
               boxShadow: '0 4px 12px rgba(186,26,26,0.3)',
             }}
@@ -127,7 +127,7 @@ function GedungFormModal({ isOpen, gedungData, onClose, onSaved }) {
     borderRadius: theme.borderRadius.default,
     border: `1.5px solid ${theme.colors.surfaceContainerHighest}`,
     backgroundColor: theme.colors.surfaceContainerLowest,
-    fontSize: '14px',
+    fontSize: '16px',
     color: theme.colors.onSurface,
     fontFamily: theme.typography.fontFamily.base,
     outline: 'none',
@@ -170,7 +170,7 @@ function GedungFormModal({ isOpen, gedungData, onClose, onSaved }) {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
               Nama Gedung *
             </label>
             <input value={form.nama_gedung} onChange={handleChange('nama_gedung')} placeholder="Gedung A / Gedung Rektorat" style={fieldStyle} />
@@ -185,7 +185,7 @@ function GedungFormModal({ isOpen, gedungData, onClose, onSaved }) {
               border: `1px solid ${theme.colors.surfaceContainer}`,
             }}
           >
-            <div style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurfaceVariant, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <div style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>location_on</span>
               Koordinat Geofence *
             </div>
@@ -198,7 +198,7 @@ function GedungFormModal({ isOpen, gedungData, onClose, onSaved }) {
               />
             </div>
             <div>
-              <label style={{ fontSize: '11px', fontWeight: 600, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.3rem' }}>
+              <label style={{ fontSize: '16px', fontWeight: 600, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.3rem' }}>
                 Radius Geofence (meter)
               </label>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -218,7 +218,7 @@ function GedungFormModal({ isOpen, gedungData, onClose, onSaved }) {
                     backgroundColor: theme.colors.primaryFixed,
                     color: theme.colors.primary,
                     borderRadius: theme.borderRadius.full,
-                    fontSize: '13px',
+                    fontSize: '16px',
                     fontWeight: 700,
                     textAlign: 'center',
                   }}
@@ -230,7 +230,7 @@ function GedungFormModal({ isOpen, gedungData, onClose, onSaved }) {
           </div>
 
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}>
               Alamat (opsional)
             </label>
             <input value={form.alamat} onChange={handleChange('alamat')} placeholder="Jl. Mayjend Haryono No. 167..." style={fieldStyle} />
@@ -243,7 +243,7 @@ function GedungFormModal({ isOpen, gedungData, onClose, onSaved }) {
                 color: theme.colors.onErrorContainer,
                 borderRadius: theme.borderRadius.default,
                 padding: '0.75rem 1rem',
-                fontSize: '13px',
+                fontSize: '16px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
@@ -262,7 +262,7 @@ function GedungFormModal({ isOpen, gedungData, onClose, onSaved }) {
                 padding: '0.7rem 1.5rem', borderRadius: theme.borderRadius.full,
                 border: `1px solid ${theme.colors.outlineVariant}`,
                 backgroundColor: 'transparent', cursor: 'pointer',
-                fontSize: '13px', fontWeight: 600,
+                fontSize: '16px', fontWeight: 600,
                 color: theme.colors.onSurfaceVariant,
                 fontFamily: theme.typography.fontFamily.base,
               }}
@@ -278,7 +278,7 @@ function GedungFormModal({ isOpen, gedungData, onClose, onSaved }) {
                 background: saving ? theme.colors.surfaceContainerHigh : theme.gradients.primaryCta,
                 color: saving ? theme.colors.onSurfaceVariant : '#fff',
                 cursor: saving ? 'not-allowed' : 'pointer',
-                fontSize: '13px', fontWeight: 700,
+                fontSize: '16px', fontWeight: 700,
                 fontFamily: theme.typography.fontFamily.base,
                 boxShadow: saving ? 'none' : theme.shadows.btnPrimary,
                 display: 'flex', alignItems: 'center', gap: '0.4rem',
@@ -348,7 +348,7 @@ export default function ManajemenGedung() {
             backgroundColor: toast.type === 'error' ? theme.colors.errorContainer : '#ecfdf5',
             color: toast.type === 'error' ? theme.colors.onErrorContainer : '#047857',
             boxShadow: theme.shadows.card,
-            fontSize: '13px', fontWeight: 600,
+            fontSize: '16px', fontWeight: 600,
             display: 'flex', alignItems: 'center', gap: '0.5rem',
           }}
         >
@@ -363,7 +363,7 @@ export default function ManajemenGedung() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: 800, color: theme.colors.onSurface, margin: '0 0 0.25rem 0' }}>Manajemen Gedung & Geofence</h1>
-          <p style={{ margin: 0, fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+          <p style={{ margin: 0, fontSize: '16px', color: theme.colors.onSurfaceVariant }}>
             Kelola data gedung kampus dan zona geofence pelacakan.
           </p>
         </div>
@@ -377,7 +377,7 @@ export default function ManajemenGedung() {
             border: 'none',
             background: theme.gradients.primaryCta,
             color: '#fff', cursor: 'pointer',
-            fontSize: '13px', fontWeight: 700,
+            fontSize: '16px', fontWeight: 700,
             fontFamily: theme.typography.fontFamily.base,
             boxShadow: theme.shadows.btnPrimary,
           }}
@@ -401,7 +401,7 @@ export default function ManajemenGedung() {
             borderRadius: theme.borderRadius.lg,
             border: `1px solid ${theme.colors.surfaceContainer}`,
             color: theme.colors.onSurfaceVariant,
-            fontSize: '13px',
+            fontSize: '16px',
           }}
         >
           Belum ada gedung yang terdaftar.
@@ -449,7 +449,7 @@ export default function ManajemenGedung() {
                       {g.nama_gedung}
                     </h3>
                     {g.alamat && (
-                      <p style={{ fontSize: '12px', color: theme.colors.onSurfaceVariant, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <p style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {g.alamat}
                       </p>
                     )}
@@ -459,16 +459,16 @@ export default function ManajemenGedung() {
                 {/* Coordinates & Radius */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.25rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '11px', color: theme.colors.outline, fontWeight: 600 }}>Koordinat</span>
-                    <span style={{ fontSize: '12px', color: theme.colors.onSurfaceVariant, fontFamily: 'monospace' }}>
+                    <span style={{ fontSize: '16px', color: theme.colors.outline, fontWeight: 600 }}>Koordinat</span>
+                    <span style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, fontFamily: 'monospace' }}>
                       {g.latitude != null ? Number(g.latitude).toFixed(5) : '—'}, {g.longitude != null ? Number(g.longitude).toFixed(5) : '—'}
                     </span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '11px', color: theme.colors.outline, fontWeight: 600 }}>Radius Geofence</span>
+                    <span style={{ fontSize: '16px', color: theme.colors.outline, fontWeight: 600 }}>Radius Geofence</span>
                     <span
                       style={{
-                        fontSize: '12px', fontWeight: 700,
+                        fontSize: '16px', fontWeight: 700,
                         padding: '0.15rem 0.6rem',
                         borderRadius: theme.borderRadius.full,
                         backgroundColor: theme.colors.primaryFixed,
@@ -493,7 +493,7 @@ export default function ManajemenGedung() {
                       border: `1px solid ${theme.colors.primary}`,
                       backgroundColor: theme.colors.primaryFixed,
                       color: theme.colors.primary,
-                      cursor: 'pointer', fontSize: '12px', fontWeight: 700,
+                      cursor: 'pointer', fontSize: '16px', fontWeight: 700,
                       fontFamily: theme.typography.fontFamily.base,
                     }}
                   >
@@ -511,7 +511,7 @@ export default function ManajemenGedung() {
                       border: `1px solid ${theme.colors.error}`,
                       backgroundColor: theme.colors.errorContainer,
                       color: theme.colors.error,
-                      cursor: 'pointer', fontSize: '12px', fontWeight: 700,
+                      cursor: 'pointer', fontSize: '16px', fontWeight: 700,
                       fontFamily: theme.typography.fontFamily.base,
                     }}
                   >

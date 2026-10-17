@@ -10,7 +10,7 @@ const fieldStyle = {
   borderRadius: theme.borderRadius.default,
   border: `1px solid ${theme.colors.outlineVariant}`,
   backgroundColor: theme.colors.surfaceContainerLowest,
-  fontSize: '13px',
+  fontSize: '16px',
   color: theme.colors.onSurface,
   fontFamily: theme.typography.fontFamily.base,
   outline: 'none',
@@ -38,7 +38,7 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
           <span className="material-symbols-outlined" style={{ fontSize: '28px', color: theme.colors.error }}>delete_forever</span>
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface, margin: 0 }}>Konfirmasi Hapus</h3>
         </div>
-        <p style={{ fontSize: '14px', color: theme.colors.onSurfaceVariant, marginBottom: '1.5rem', lineHeight: 1.6 }}>
+        <p style={{ fontSize: '16px', color: theme.colors.onSurfaceVariant, marginBottom: '1.5rem', lineHeight: 1.6 }}>
           {message}
         </p>
         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
@@ -48,7 +48,7 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
               padding: '0.6rem 1.25rem', borderRadius: theme.borderRadius.full,
               border: `1px solid ${theme.colors.outlineVariant}`,
               backgroundColor: 'transparent', cursor: 'pointer',
-              fontSize: '13px', fontWeight: 600,
+              fontSize: '16px', fontWeight: 600,
               color: theme.colors.onSurfaceVariant,
               fontFamily: theme.typography.fontFamily.base,
             }}
@@ -60,7 +60,7 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
             style={{
               padding: '0.6rem 1.25rem', borderRadius: theme.borderRadius.full,
               border: 'none', backgroundColor: theme.colors.error, color: '#fff',
-              cursor: 'pointer', fontSize: '13px', fontWeight: 700,
+              cursor: 'pointer', fontSize: '16px', fontWeight: 700,
               fontFamily: theme.typography.fontFamily.base,
             }}
           >
@@ -143,7 +143,7 @@ function EntityFormModal({ type, initialData, jurusanList, onClose, onSubmit }) 
         </div>
 
         <div style={{ marginBottom: '0.75rem' }}>
-          <label style={{ fontSize: '11px', fontWeight: 600, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.3rem' }}>
+          <label style={{ fontSize: '16px', fontWeight: 600, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.3rem' }}>
             {isProdi ? 'Nama Prodi *' : 'Nama Jurusan *'}
           </label>
           <input
@@ -157,7 +157,7 @@ function EntityFormModal({ type, initialData, jurusanList, onClose, onSubmit }) 
 
         {isProdi && (
           <div style={{ marginBottom: '0.75rem' }}>
-            <label style={{ fontSize: '11px', fontWeight: 600, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.3rem' }}>
+            <label style={{ fontSize: '16px', fontWeight: 600, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.3rem' }}>
               Jurusan Induk *
             </label>
             <select
@@ -178,7 +178,7 @@ function EntityFormModal({ type, initialData, jurusanList, onClose, onSubmit }) 
             backgroundColor: theme.colors.errorContainer,
             color: theme.colors.onErrorContainer,
             borderRadius: theme.borderRadius.default,
-            padding: '0.75rem 1rem', fontSize: '13px',
+            padding: '0.75rem 1rem', fontSize: '16px',
             display: 'flex', alignItems: 'center', gap: '0.5rem',
           }}>
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>error</span>
@@ -193,7 +193,7 @@ function EntityFormModal({ type, initialData, jurusanList, onClose, onSubmit }) 
               padding: '0.7rem 1.5rem', borderRadius: theme.borderRadius.full,
               border: `1px solid ${theme.colors.outlineVariant}`,
               backgroundColor: 'transparent', cursor: 'pointer',
-              fontSize: '13px', fontWeight: 600,
+              fontSize: '16px', fontWeight: 600,
               color: theme.colors.onSurfaceVariant,
               fontFamily: theme.typography.fontFamily.base,
             }}
@@ -208,7 +208,7 @@ function EntityFormModal({ type, initialData, jurusanList, onClose, onSubmit }) 
               background: saving ? theme.colors.surfaceContainerHigh : theme.gradients.primaryCta,
               color: saving ? theme.colors.onSurfaceVariant : '#fff',
               cursor: saving ? 'not-allowed' : 'pointer',
-              fontSize: '13px', fontWeight: 700,
+              fontSize: '16px', fontWeight: 700,
               fontFamily: theme.typography.fontFamily.base,
               boxShadow: saving ? 'none' : theme.shadows.btnPrimary,
               display: 'flex', alignItems: 'center', gap: '0.4rem',
@@ -224,7 +224,7 @@ function EntityFormModal({ type, initialData, jurusanList, onClose, onSubmit }) 
 }
 
 const thStyle = {
-  padding: '0.85rem 1.25rem', textAlign: 'left', fontSize: '11px',
+  padding: '0.85rem 1.25rem', textAlign: 'left', fontSize: '16px',
   fontWeight: 700, color: theme.colors.onSurfaceVariant,
   textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap',
 };
@@ -318,7 +318,7 @@ function JurusanProdi() {
           padding: '0.85rem 1.25rem', borderRadius: theme.borderRadius.default,
           backgroundColor: toast.type === 'error' ? theme.colors.errorContainer : '#ecfdf5',
           color: toast.type === 'error' ? theme.colors.onErrorContainer : '#047857',
-          boxShadow: theme.shadows.card, fontSize: '13px', fontWeight: 600,
+          boxShadow: theme.shadows.card, fontSize: '16px', fontWeight: 600,
           display: 'flex', alignItems: 'center', gap: '0.5rem',
         }}>
           <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
@@ -337,7 +337,7 @@ function JurusanProdi() {
           <h1 style={{ fontSize: '22px', fontWeight: 800, color: theme.colors.onSurface, margin: '0 0 0.25rem 0' }}>
             Manajemen Jurusan &amp; Prodi
           </h1>
-          <p style={{ margin: 0, fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+          <p style={{ margin: 0, fontSize: '16px', color: theme.colors.onSurfaceVariant }}>
             Data master pendukung filter pada Dashboard Cari Dosen.
           </p>
         </div>
@@ -354,7 +354,7 @@ function JurusanProdi() {
               backgroundColor: theme.colors.primaryFixed, color: theme.colors.primary,
               cursor: jurusanList.length === 0 ? 'not-allowed' : 'pointer',
               opacity: jurusanList.length === 0 ? 0.6 : 1,
-              fontSize: '13px', fontWeight: 700,
+              fontSize: '16px', fontWeight: 700,
               fontFamily: theme.typography.fontFamily.base,
             }}
           >
@@ -368,7 +368,7 @@ function JurusanProdi() {
               display: 'flex', alignItems: 'center', gap: '0.5rem',
               padding: '0.7rem 1.4rem', borderRadius: theme.borderRadius.full,
               border: 'none', background: theme.gradients.primaryCta, color: '#fff',
-              cursor: 'pointer', fontSize: '13px', fontWeight: 700,
+              cursor: 'pointer', fontSize: '16px', fontWeight: 700,
               fontFamily: theme.typography.fontFamily.base,
               boxShadow: theme.shadows.btnPrimary,
             }}
@@ -402,7 +402,7 @@ function JurusanProdi() {
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
           </button>
         )}
-        <span style={{ marginLeft: 'auto', fontSize: '12px', color: theme.colors.onSurfaceVariant, fontWeight: 600 }}>
+        <span style={{ marginLeft: 'auto', fontSize: '16px', color: theme.colors.onSurfaceVariant, fontWeight: 600 }}>
           {jurusanList.length} jurusan · {prodiList.length} prodi
         </span>
       </div>
@@ -449,12 +449,12 @@ function JurusanProdi() {
                     filteredJurusan.map((j, idx) => (
                       <tr key={j.id} style={{ borderTop: `1px solid ${theme.colors.surfaceContainer}` }}>
                         <td style={{ ...thStyle, textTransform: 'none', color: theme.colors.outline }}>{idx + 1}</td>
-                        <td style={{ padding: '0.85rem 1.25rem', fontSize: '13px', fontWeight: 600, color: theme.colors.onSurface }}>
+                        <td style={{ padding: '0.85rem 1.25rem', fontSize: '16px', fontWeight: 600, color: theme.colors.onSurface }}>
                           {j.nama_jurusan}
                         </td>
                         <td style={{ padding: '0.85rem 1.25rem' }}>
                           <span style={{
-                            fontSize: '12px', fontWeight: 700, padding: '0.2rem 0.65rem',
+                            fontSize: '16px', fontWeight: 700, padding: '0.2rem 0.65rem',
                             borderRadius: theme.borderRadius.full,
                             backgroundColor: theme.colors.primaryFixed, color: theme.colors.primary,
                           }}>
@@ -529,13 +529,13 @@ function JurusanProdi() {
                     filteredProdi.map((p, idx) => (
                       <tr key={p.id} style={{ borderTop: `1px solid ${theme.colors.surfaceContainer}` }}>
                         <td style={{ ...thStyle, textTransform: 'none', color: theme.colors.outline }}>{idx + 1}</td>
-                        <td style={{ padding: '0.85rem 1.25rem', fontSize: '13px', fontWeight: 600, color: theme.colors.onSurface }}>
+                        <td style={{ padding: '0.85rem 1.25rem', fontSize: '16px', fontWeight: 600, color: theme.colors.onSurface }}>
                           {p.nama_prodi}
                         </td>
-                        <td style={{ padding: '0.85rem 1.25rem', fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+                        <td style={{ padding: '0.85rem 1.25rem', fontSize: '16px', color: theme.colors.onSurfaceVariant }}>
                           {p.nama_jurusan}
                         </td>
-                        <td style={{ padding: '0.85rem 1.25rem', fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+                        <td style={{ padding: '0.85rem 1.25rem', fontSize: '16px', color: theme.colors.onSurfaceVariant }}>
                           {p.jumlah_dosen}
                         </td>
                         <td style={{ padding: '0.6rem 1.25rem' }}>
