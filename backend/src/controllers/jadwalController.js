@@ -1,5 +1,6 @@
 const { pool } = require('../config/db');
 const xlsx = require('xlsx');
+const { getProdiScope } = require('../utils/tenantScope');
 
 const HARI_VALID = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
 
@@ -26,15 +27,17 @@ const hasConflict = async (dosen_id, hari, jam_mulai, jam_selesai, excludeId = n
 const getJadwal = async (req, res) => {
   try {
     const { dosen_id, hari, prodi_id } = req.query;
+    const scope = getProdiScope(req.user, 'p', 'j');
     let sql = `
       SELECT jm.id, jm.dosen_id, d.nama AS nama_dosen, jm.hari, jm.jam_mulai, jm.jam_selesai,
              jm.mata_kuliah, jm.gedung_id, g.nama_gedung, p.nama_prodi
       FROM jadwal_mengajar jm
       JOIN dosen d ON d.id = jm.dosen_id
       JOIN prodi p ON p.id = d.prodi_id
+      JOIN jurusan j ON j.id = p.jurusan_id
       JOIN gedung g ON g.id = jm.gedung_id
-      WHERE 1=1`;
-    const params = [];
+      WHERE ${scope.sql}`;
+    const params = [...scope.params];
     if (dosen_id) { sql += ' AND jm.dosen_id = ?'; params.push(dosen_id); }
     if (prodi_id) { sql += ' AND d.prodi_id = ?'; params.push(prodi_id); }
     if (hari) { sql += ' AND jm.hari = ?'; params.push(hari); }
@@ -42,6 +45,21 @@ const getJadwal = async (req, res) => {
     const [rows] = await pool.query(sql, params);
     res.json({ success: true, data: rows });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+const validateAssignmentScope = async (req, dosenId, gedungId) => {
+  const scope = getProdiScope(req.user, 'p', 'j');
+  const [rows] = await pool.query(
+    `SELECT d.id
+     FROM dosen d
+     JOIN prodi p ON p.id = d.prodi_id
+     JOIN jurusan j ON j.id = p.jurusan_id
+     JOIN gedung g ON g.id = ? AND g.campus_id = j.campus_id
+     WHERE d.id = ? AND ${scope.sql}
+     LIMIT 1`,
+    [gedungId, dosenId, ...scope.params]
+  );
+  return rows.length > 0;
 };
 
 const createJadwal = async (req, res) => {
@@ -58,6 +76,9 @@ const createJadwal = async (req, res) => {
     }
     if (toTime(jam_selesai) <= toTime(jam_mulai)) {
       return res.status(400).json({ success: false, message: 'jam_selesai harus lebih besar dari jam_mulai.' });
+    }
+    if (!(await validateAssignmentScope(req, dosen_id, gedung_id))) {
+      return res.status(403).json({ success: false, message: 'Dosen atau gedung di luar cakupan admin.' });
     }
     if (await hasConflict(dosen_id, hari, jam_mulai, jam_selesai)) {
       return res.status(409).json({ success: false, message: 'Bentrok: dosen sudah punya jadwal lain yang overlap di hari & jam yang sama.' });
@@ -89,6 +110,21 @@ const updateJadwal = async (req, res) => {
     if (toTime(jam_selesai) <= toTime(jam_mulai)) {
       return res.status(400).json({ success: false, message: 'jam_selesai harus lebih besar dari jam_mulai.' });
     }
+    const scope = getProdiScope(req.user, 'p', 'j');
+    const [existing] = await pool.query(
+      `SELECT jm.id FROM jadwal_mengajar jm
+       JOIN dosen d ON d.id = jm.dosen_id
+       JOIN prodi p ON p.id = d.prodi_id
+       JOIN jurusan j ON j.id = p.jurusan_id
+       WHERE jm.id = ? AND ${scope.sql}`,
+      [id, ...scope.params]
+    );
+    if (!existing.length) {
+      return res.status(404).json({ success: false, message: 'Jadwal tidak ditemukan dalam cakupan admin.' });
+    }
+    if (!(await validateAssignmentScope(req, dosen_id, gedung_id))) {
+      return res.status(403).json({ success: false, message: 'Dosen atau gedung di luar cakupan admin.' });
+    }
     if (await hasConflict(dosen_id, hari, jam_mulai, jam_selesai, id)) {
       return res.status(409).json({ success: false, message: 'Bentrok: dosen sudah punya jadwal lain yang overlap di hari & jam yang sama.' });
     }
@@ -108,7 +144,15 @@ const updateJadwal = async (req, res) => {
 
 const deleteJadwal = async (req, res) => {
   try {
-    const [r] = await pool.query('DELETE FROM jadwal_mengajar WHERE id=?', [req.params.id]);
+    const scope = getProdiScope(req.user, 'p', 'j');
+    const [r] = await pool.query(
+      `DELETE jm FROM jadwal_mengajar jm
+       JOIN dosen d ON d.id = jm.dosen_id
+       JOIN prodi p ON p.id = d.prodi_id
+       JOIN jurusan j ON j.id = p.jurusan_id
+       WHERE jm.id = ? AND ${scope.sql}`,
+      [req.params.id, ...scope.params]
+    );
     if (r.affectedRows === 0) return res.status(404).json({ success: false, message: 'Jadwal tidak ditemukan.' });
     res.json({ success: true, message: 'Jadwal berhasil dihapus.' });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
@@ -138,9 +182,18 @@ const importJadwal = async (req, res) => {
     }
     if (!rows || rows.length === 0) return res.status(400).json({ success: false, message: 'File kosong.' });
 
-    const [dosenRows] = await pool.query('SELECT id, nip FROM dosen');
+    const scope = getProdiScope(req.user, 'p', 'j');
+    const [dosenRows] = await pool.query(
+      `SELECT d.id, d.nip FROM dosen d
+       JOIN prodi p ON p.id = d.prodi_id JOIN jurusan j ON j.id = p.jurusan_id
+       WHERE ${scope.sql}`,
+      scope.params
+    );
     const nipMap = Object.fromEntries(dosenRows.map((d) => [d.nip.trim(), d.id]));
-    const [gedungRows] = await pool.query('SELECT id, nama_gedung FROM gedung');
+    const [gedungRows] = await pool.query(
+      'SELECT id, nama_gedung FROM gedung WHERE campus_id = ?',
+      [req.user.campus_id]
+    );
     const gedungMap = Object.fromEntries(gedungRows.map((g) => [g.nama_gedung.trim().toLowerCase(), g.id]));
 
     let berhasil = 0;

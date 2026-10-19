@@ -19,8 +19,14 @@ const getDosenByUserId = async (userId) => {
     `
     SELECT
       d.id, d.user_id, d.nip, d.nama, d.jabatan, d.foto, d.gps_enabled,
+      d.status_ketersediaan, d.ketersediaan_sampai,
+      CASE
+        WHEN d.status_ketersediaan = 'tersedia' AND d.ketersediaan_sampai > NOW()
+          THEN 'tersedia'
+        ELSE 'tidak_tersedia'
+      END AS status_ketersediaan_efektif,
       p.id AS prodi_id, p.nama_prodi,
-      j.id AS jurusan_id, j.nama_jurusan
+      j.id AS jurusan_id, j.nama_jurusan, j.campus_id
     FROM dosen d
     JOIN prodi p   ON d.prodi_id = p.id
     JOIN jurusan j ON p.jurusan_id = j.id
@@ -73,8 +79,10 @@ const getProfil = async (req, res) => {
       SELECT
         id, nama_gedung, latitude, longitude, radius_meter
       FROM gedung
+      WHERE campus_id = ?
       ORDER BY nama_gedung ASC
-      `
+      `,
+      [dosen.campus_id]
     );
 
     return res.status(200).json({
@@ -87,6 +95,10 @@ const getProfil = async (req, res) => {
         foto: dosen.foto,
         email: req.user.email,
         gps_enabled: Boolean(dosen.gps_enabled),
+        status_ketersediaan: dosen.status_ketersediaan_efektif,
+        ketersediaan_sampai: dosen.status_ketersediaan_efektif === 'tersedia'
+          ? dosen.ketersediaan_sampai
+          : null,
         prodi: { id: dosen.prodi_id, nama: dosen.nama_prodi },
         status_terkini: statusRows[0] || {
           status_type: 'tidak_diketahui',
@@ -182,7 +194,8 @@ const kirimLokasi = async (req, res) => {
 
     // Tentukan gedung terdekat (geofence) di sisi server
     const [gedungRows] = await pool.query(
-      'SELECT id, nama_gedung, latitude, longitude, radius_meter FROM gedung'
+      'SELECT id, nama_gedung, latitude, longitude, radius_meter FROM gedung WHERE campus_id = ?',
+      [dosen.campus_id]
     );
     const { gedung, jarak_meter } = findNearestGedung(
       gedungRows,
@@ -277,7 +290,8 @@ const kirimLokasiBatch = async (req, res) => {
     }
 
     const [gedungRows] = await pool.query(
-      'SELECT id, nama_gedung, latitude, longitude, radius_meter FROM gedung'
+      'SELECT id, nama_gedung, latitude, longitude, radius_meter FROM gedung WHERE campus_id = ?',
+      [dosen.campus_id]
     );
 
     let berhasil = 0;
@@ -362,7 +376,14 @@ const updateGps = async (req, res) => {
       });
     }
 
-    const gpsEnabled = Boolean(req.body.gps_enabled);
+    if (typeof req.body.gps_enabled !== 'boolean') {
+      return res.status(400).json({
+        success: false,
+        message: 'gps_enabled harus berupa boolean true atau false.',
+      });
+    }
+
+    const gpsEnabled = req.body.gps_enabled;
 
     await pool.query('UPDATE dosen SET gps_enabled = ? WHERE id = ?', [
       gpsEnabled ? 1 : 0,
@@ -399,6 +420,69 @@ const updateGps = async (req, res) => {
       success: false,
       message: 'Gagal mengubah status pelacakan GPS.',
       error: error.message,
+    });
+  }
+};
+
+const updateAvailability = async (req, res) => {
+  const status = req.body.status_ketersediaan;
+  const durationHours = Number(req.body.durasi_jam);
+  if (!['tersedia', 'tidak_tersedia'].includes(status)) {
+    return res.status(400).json({
+      success: false,
+      message: 'status_ketersediaan harus tersedia atau tidak_tersedia.',
+    });
+  }
+  if (status === 'tersedia' && (!Number.isInteger(durationHours) || durationHours < 1 || durationHours > 12)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Durasi ketersediaan harus antara 1 sampai 12 jam.',
+    });
+  }
+
+  try {
+    const dosen = await getDosenByUserId(req.user.id);
+    if (!dosen) {
+      return res.status(404).json({
+        success: false,
+        message: 'Akun ini tidak terdaftar sebagai dosen.',
+      });
+    }
+
+    if (status === 'tersedia') {
+      await pool.query(
+        `UPDATE dosen
+         SET status_ketersediaan = 'tersedia',
+             ketersediaan_sampai = DATE_ADD(NOW(), INTERVAL ${durationHours} HOUR)
+         WHERE id = ?`,
+        [dosen.id]
+      );
+    } else {
+      await pool.query(
+        `UPDATE dosen
+         SET status_ketersediaan = 'tidak_tersedia', ketersediaan_sampai = NULL
+         WHERE id = ?`,
+        [dosen.id]
+      );
+    }
+
+    const [rows] = await pool.query(
+      `SELECT status_ketersediaan, ketersediaan_sampai
+       FROM dosen WHERE id = ? LIMIT 1`,
+      [dosen.id]
+    );
+    return res.status(200).json({
+      success: true,
+      message: status === 'tersedia'
+        ? `Status tersedia aktif selama ${durationHours} jam.`
+        : 'Status ketersediaan dinonaktifkan.',
+      data: rows[0],
+    });
+  } catch (error) {
+    console.error('appDosen updateAvailability Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal memperbarui status ketersediaan.',
     });
   }
 };
@@ -838,6 +922,7 @@ module.exports = {
   kirimLokasi,
   kirimLokasiBatch,
   updateGps,
+  updateAvailability,
   getJadwal,
   createJadwalMandiri,
   updateJadwalMandiri,

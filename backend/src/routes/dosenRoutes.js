@@ -12,11 +12,11 @@ const { verifyToken, requireRole } = require('../middlewares/authMiddleware');
 
 const { getDetailDosen } = require('../controllers/pencarianDosenController');
 
-// Public / Authenticated read routes
-router.get('/', getDosenList);
-router.get('/meta/prodi', getProdiList);
-router.get('/:id', getDosenById);
-router.get('/:id/status-detail', getDetailDosen);
+// Tenant-scoped reads require an authenticated campus user.
+router.get('/', verifyToken, requireRole('mahasiswa', 'dosen', 'admin'), getDosenList);
+router.get('/meta/prodi', verifyToken, requireRole('mahasiswa', 'dosen', 'admin'), getProdiList);
+router.get('/:id', verifyToken, requireRole('mahasiswa', 'dosen', 'admin'), getDosenById);
+router.get('/:id/status-detail', verifyToken, requireRole('mahasiswa', 'dosen', 'admin'), getDetailDosen);
 
 // Admin-only mutation routes
 router.post('/', verifyToken, requireRole('admin'), createDosen);

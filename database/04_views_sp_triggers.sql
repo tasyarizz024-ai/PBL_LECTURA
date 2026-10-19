@@ -156,7 +156,7 @@ BEGIN
   SET v_user_id = LAST_INSERT_ID();
 
   INSERT INTO dosen (user_id, prodi_id, nip, nama, jabatan, gps_enabled)
-  VALUES (v_user_id, p_prodi_id, p_nip, p_nama, p_jabatan, TRUE);
+  VALUES (v_user_id, p_prodi_id, p_nip, p_nama, p_jabatan, FALSE);
 
   COMMIT;
 END$$

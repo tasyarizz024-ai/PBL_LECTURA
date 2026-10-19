@@ -30,6 +30,10 @@ const login = async (req, res) => {
           u.email, 
           u.password, 
           u.role,
+          u.campus_id,
+          u.display_name,
+          u.managed_jurusan_id,
+          u.managed_prodi_id,
           m.id AS mahasiswa_id, 
           m.nim, 
           m.nama AS mahasiswa_nama, 
@@ -52,6 +56,10 @@ const login = async (req, res) => {
           u.email, 
           u.password, 
           u.role,
+          u.campus_id,
+          u.display_name,
+          u.managed_jurusan_id,
+          u.managed_prodi_id,
           m.id AS mahasiswa_id, 
           m.nim, 
           m.nama AS mahasiswa_nama, 
@@ -80,7 +88,12 @@ const login = async (req, res) => {
     const user = rows[0];
 
     // Validasi kesesuaian role jika tab role dipilih ('mahasiswa' atau 'admin')
-    if (role && user.role !== role.toLowerCase()) {
+    const requestedRole = String(role || '').toLowerCase();
+    const adminRoles = ['superadmin', 'admin_kampus', 'admin_prodi'];
+    const roleMatches = requestedRole === 'admin'
+      ? adminRoles.includes(user.role)
+      : !requestedRole || user.role === requestedRole;
+    if (!roleMatches) {
       return res.status(403).json({
         success: false,
         message: `Akses ditolak: Akun ini terdaftar sebagai role '${user.role}', bukan '${role}'.`,
@@ -100,7 +113,8 @@ const login = async (req, res) => {
     const displayName =
       user.mahasiswa_nama ||
       user.dosen_nama ||
-      (user.role === 'admin' ? 'Administrator' : null);
+      user.display_name ||
+      (user.role.startsWith('admin') || user.role === 'superadmin' ? 'Administrator' : null);
     const displayId = user.nim || user.dosen_nip || null;
 
     // Buat JWT Token
@@ -108,6 +122,10 @@ const login = async (req, res) => {
       id: user.id,
       email: user.email,
       role: user.role,
+      campus_id: user.campus_id || null,
+      display_name: user.display_name || null,
+      managed_jurusan_id: user.managed_jurusan_id || null,
+      managed_prodi_id: user.managed_prodi_id || null,
       mahasiswa_id: user.mahasiswa_id || null,
       dosen_id: user.dosen_id || null,
       nim: displayId,
@@ -129,6 +147,7 @@ const login = async (req, res) => {
         id: user.id,
         email: user.email,
         role: user.role,
+        campus_id: user.campus_id || null,
         nama: displayName,
         nim: displayId,
         prodi: user.mahasiswa_prodi || null,
@@ -158,6 +177,8 @@ const getMe = async (req, res) => {
         u.id, 
         u.email, 
         u.role, 
+        u.campus_id,
+        u.display_name,
         u.created_at,
         m.id AS mahasiswa_id, 
         m.nim, 
@@ -191,10 +212,12 @@ const getMe = async (req, res) => {
         id: user.id,
         email: user.email,
         role: user.role,
+        campus_id: user.campus_id,
         nama:
           user.mahasiswa_nama ||
           user.dosen_nama ||
-          (user.role === 'admin' ? 'Administrator' : null),
+          user.display_name ||
+          (user.role.startsWith('admin') || user.role === 'superadmin' ? 'Administrator' : null),
         nim: user.nim || user.dosen_nip || null,
         prodi: user.mahasiswa_prodi || null,
         gps_enabled:
@@ -215,58 +238,78 @@ const getMe = async (req, res) => {
 };
 
 /**
- * Ganti Password Mandiri (Mahasiswa / Dosen / Admin)
+ * Change the authenticated user's password.
  * PATCH /api/auth/change-password
- * Body: { oldPassword, newPassword }
+ * Body accepts { current_password, new_password } and the legacy
+ * { oldPassword, newPassword } shape.
  */
 const changePassword = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { oldPassword, newPassword } = req.body;
+    const currentPassword = req.body.current_password ?? req.body.oldPassword;
+    const newPassword = req.body.new_password ?? req.body.newPassword;
 
-    if (!oldPassword || !newPassword) {
+    if (typeof currentPassword !== 'string' || !currentPassword || typeof newPassword !== 'string' || !newPassword) {
       return res.status(400).json({
         success: false,
-        message: 'Password lama dan password baru wajib diisi.',
+        message: 'Password saat ini dan password baru wajib diisi.',
       });
     }
 
-    if (typeof newPassword !== 'string' || newPassword.length < 6) {
+    if (newPassword.length < 8) {
       return res.status(400).json({
         success: false,
-        message: 'Password baru minimal harus 6 karakter.',
+        message: 'Password baru harus terdiri dari minimal 8 karakter.',
       });
     }
 
-    const [rows] = await pool.query('SELECT id, password FROM users WHERE id = ? LIMIT 1', [userId]);
+    if (Buffer.byteLength(newPassword, 'utf8') > 72) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password baru tidak boleh melebihi 72 byte.',
+      });
+    }
+
+    const [rows] = await pool.query(
+      'SELECT password FROM users WHERE id = ? AND role = ? LIMIT 1',
+      [userId, req.user.role]
+    );
     if (rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Pengguna tidak ditemukan.',
+        message: 'Akun tidak ditemukan.',
       });
     }
 
-    const user = rows[0];
-    const isOldValid = await bcrypt.compare(oldPassword, user.password);
-    if (!isOldValid) {
+    if (!await bcrypt.compare(currentPassword, rows[0].password)) {
       return res.status(400).json({
         success: false,
-        message: 'Password lama tidak sesuai.',
+        message: 'Password saat ini tidak sesuai.',
       });
     }
 
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-    await pool.query('UPDATE users SET password = ? WHERE id = ?', [hashedNewPassword, userId]);
+    if (await bcrypt.compare(newPassword, rows[0].password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password baru harus berbeda dari password saat ini.',
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await pool.query(
+      'UPDATE users SET password = ? WHERE id = ? AND role = ?',
+      [hashedPassword, userId, req.user.role]
+    );
 
     return res.status(200).json({
       success: true,
-      message: 'Password berhasil diperbarui.',
+      message: 'Password berhasil diubah.',
     });
   } catch (error) {
-    console.error('ChangePassword Error:', error);
+    console.error('changePassword Error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Gagal memperbarui password.',
+      message: 'Gagal mengubah password.',
       error: error.message,
     });
   }
@@ -277,4 +320,3 @@ module.exports = {
   getMe,
   changePassword,
 };
-

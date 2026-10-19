@@ -8,7 +8,9 @@ import LogAktivitas from './pages/LogAktivitas';
 import JurusanProdi from './pages/JurusanProdi';
 import ManajemenJadwal from './pages/ManajemenJadwal';
 import ManajemenUser from './pages/ManajemenUser';
-import DosenDashboard from './pages/DosenDashboard';
+import ManajemenMahasiswa from './pages/ManajemenMahasiswa';
+import DosenLocationPage from './pages/DosenLocationPage';
+import ManajemenAkses from './pages/ManajemenAkses';
 import { clearSession, getStoredUser, SESSION_EXPIRED_EVENT } from './lib/api';
 
 import Navbar from './components/Navbar';
@@ -24,7 +26,9 @@ function App() {
   // Mahasiswa nav tab
   const [activeTab, setActiveTab] = useState('cari-dosen');
   // Admin nav page
-  const [adminPage, setAdminPage] = useState('dashboard');
+  const [adminPage, setAdminPage] = useState(() =>
+    getStoredUser()?.role === 'superadmin' ? 'manajemen-akses' : 'dashboard'
+  );
 
   // Banner untuk pengumuman session expired dari interceptor 401.
   const [sessionNotice, setSessionNotice] = useState(null);
@@ -34,7 +38,7 @@ function App() {
     setUser(userData);
     // Reset page state
     setActiveTab('cari-dosen');
-    setAdminPage('dashboard');
+    setAdminPage(userData.role === 'superadmin' ? 'manajemen-akses' : 'dashboard');
   };
 
   const handleLogout = () => {
@@ -89,12 +93,14 @@ function App() {
   }
 
   // ── Admin ──────────────────────────────────────────────────────────────────
-  if (user.role === 'admin') {
+  if (['superadmin', 'admin_kampus', 'admin_prodi'].includes(user.role)) {
     const renderAdminPage = () => {
       switch (adminPage) {
         case 'dashboard':       return <AdminDashboard />;
         case 'manajemen-user':  return <ManajemenUser />;
         case 'manajemen-dosen': return <ManajemenDosen />;
+        case 'manajemen-mahasiswa': return <ManajemenMahasiswa />;
+        case 'manajemen-akses': return <ManajemenAkses user={user} />;
         case 'manajemen-gedung':return <ManajemenGedung />;
         case 'manajemen-jadwal': return <ManajemenJadwal />;
         case 'jurusan-prodi':    return <JurusanProdi />;
@@ -115,9 +121,8 @@ function App() {
     );
   }
 
-  // ── Dosen ──────────────────────────────────────────────────────────────────
   if (user.role === 'dosen') {
-    return <DosenDashboard onLogout={handleLogout} />;
+    return <DosenLocationPage user={user} onLogout={handleLogout} />;
   }
 
   // ── Mahasiswa ──────────────────────────────────────────────────────────────

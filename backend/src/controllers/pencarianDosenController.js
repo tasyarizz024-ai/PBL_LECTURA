@@ -1,4 +1,75 @@
 const { pool } = require('../config/db');
+const { getProdiScope, getTenantViewScope } = require('../utils/tenantScope');
+
+const getRealtimeLocation = async (req, res) => {
+  const dosenId = Number(req.params.id);
+  if (!Number.isInteger(dosenId) || dosenId < 1) {
+    return res.status(400).json({
+      success: false,
+      message: 'ID dosen tidak valid.',
+    });
+  }
+
+  try {
+    const [rows] = await pool.query(
+      `
+      SELECT
+        d.gps_enabled,
+        ll.latitude,
+        ll.longitude,
+        ll.recorded_at
+      FROM dosen d
+      JOIN prodi p ON p.id = d.prodi_id
+      JOIN jurusan j ON j.id = p.jurusan_id
+      LEFT JOIN location_logs ll
+        ON ll.id = (
+          SELECT latest.id
+          FROM location_logs latest
+          WHERE latest.dosen_id = d.id
+            AND latest.recorded_at >= NOW() - INTERVAL 2 MINUTE
+            AND latest.recorded_at <= NOW()
+          ORDER BY latest.recorded_at DESC, latest.id DESC
+          LIMIT 1
+        )
+      WHERE d.id = ?
+        AND j.campus_id = ?
+      LIMIT 1
+      `,
+      [dosenId, req.user.campus_id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Dosen tidak ditemukan.',
+      });
+    }
+
+    const dosen = rows[0];
+    const sharingEnabled = Boolean(dosen.gps_enabled);
+    const location = sharingEnabled && dosen.latitude !== null
+      ? {
+          latitude: Number(dosen.latitude),
+          longitude: Number(dosen.longitude),
+          recorded_at: dosen.recorded_at,
+        }
+      : null;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        sharing_enabled: sharingEnabled,
+        location,
+      },
+    });
+  } catch (error) {
+    console.error('getRealtimeLocation Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal mengambil lokasi realtime dosen.',
+    });
+  }
+};
 
 /**
  * GET /api/pencarian-dosen
@@ -13,6 +84,7 @@ const cariDosen = async (req, res) => {
   try {
     const { search, prodi_id, status_type } = req.query;
 
+    const scope = getTenantViewScope(req.user);
     let query = `
       SELECT 
         dosen_id,
@@ -20,6 +92,16 @@ const cariDosen = async (req, res) => {
         nama,
         jabatan,
         foto,
+        CASE
+          WHEN status_ketersediaan = 'tersedia' AND ketersediaan_sampai > NOW()
+            THEN 'tersedia'
+          ELSE 'tidak_tersedia'
+        END AS status_ketersediaan,
+        CASE
+          WHEN status_ketersediaan = 'tersedia' AND ketersediaan_sampai > NOW()
+            THEN ketersediaan_sampai
+          ELSE NULL
+        END AS ketersediaan_sampai,
         prodi_id,
         nama_prodi,
         jurusan_id,
@@ -30,9 +112,9 @@ const cariDosen = async (req, res) => {
         probabilitas,
         last_updated
       FROM v_pencarian_dosen
-      WHERE 1=1
+      WHERE ${scope.sql}
     `;
-    const queryParams = [];
+    const queryParams = [...scope.params];
 
     // Filter Prodi
     if (prodi_id) {
@@ -97,6 +179,16 @@ const getDetailDosen = async (req, res) => {
         d.jabatan,
         d.foto,
         d.gps_enabled,
+        CASE
+          WHEN d.status_ketersediaan = 'tersedia' AND d.ketersediaan_sampai > NOW()
+            THEN 'tersedia'
+          ELSE 'tidak_tersedia'
+        END AS status_ketersediaan,
+        CASE
+          WHEN d.status_ketersediaan = 'tersedia' AND d.ketersediaan_sampai > NOW()
+            THEN d.ketersediaan_sampai
+          ELSE NULL
+        END AS ketersediaan_sampai,
         u.email,
         p.id AS prodi_id,
         p.nama_prodi,
@@ -120,7 +212,11 @@ const getDetailDosen = async (req, res) => {
       LIMIT 1
     `;
 
-    const [dosenRows] = await pool.query(query, [id]);
+    const scope = getProdiScope(req.user, 'p', 'j');
+    const [dosenRows] = await pool.query(
+      query.replace('WHERE d.id = ?', `WHERE d.id = ? AND ${scope.sql}`),
+      [id, ...scope.params]
+    );
 
     if (dosenRows.length === 0) {
       return res.status(404).json({
@@ -219,6 +315,8 @@ const getDetailDosen = async (req, res) => {
         foto: row.foto,
         email: row.email,
         gps_enabled: Boolean(row.gps_enabled),
+        status_ketersediaan: row.status_ketersediaan,
+        ketersediaan_sampai: row.ketersediaan_sampai,
         prodi: {
           id: row.prodi_id,
           nama: row.nama_prodi,
@@ -266,4 +364,5 @@ const getDetailDosen = async (req, res) => {
 module.exports = {
   cariDosen,
   getDetailDosen,
+  getRealtimeLocation,
 };

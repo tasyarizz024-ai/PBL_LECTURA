@@ -1,4 +1,5 @@
 const { pool } = require('../config/db');
+const { getProdiScope } = require('../utils/tenantScope');
 
 /**
  * CRUD data master jurusan & prodi.
@@ -28,13 +29,15 @@ const isDuplicateError = (error) => error && error.code === 'ER_DUP_ENTRY';
  */
 const getJurusanList = async (req, res) => {
   try {
+    const scope = getProdiScope(req.user, 'p', 'j');
     const [rows] = await pool.query(`
       SELECT j.id, j.nama_jurusan, COUNT(p.id) AS jumlah_prodi
       FROM jurusan j
       LEFT JOIN prodi p ON p.jurusan_id = j.id
+      WHERE ${scope.sql}
       GROUP BY j.id, j.nama_jurusan
       ORDER BY j.nama_jurusan ASC
-    `);
+    `, scope.params);
 
     return res.status(200).json({
       success: true,
@@ -59,9 +62,26 @@ const getJurusanById = async (req, res) => {
   try {
     const { id } = req.params;
 
+    let jurusanScope = 'campus_id = ?';
+    let jurusanScopeParams = [req.user.campus_id];
+    if (req.user.role === 'superadmin') {
+      jurusanScope = '1=1';
+      jurusanScopeParams = [];
+    } else if (req.user.role === 'admin_prodi') {
+      if (req.user.managed_prodi_id) {
+        jurusanScope = 'id = (SELECT jurusan_id FROM prodi WHERE id = ?) AND campus_id = ?';
+        jurusanScopeParams = [req.user.managed_prodi_id, req.user.campus_id];
+      } else if (req.user.managed_jurusan_id) {
+        jurusanScope = 'id = ? AND campus_id = ?';
+        jurusanScopeParams = [req.user.managed_jurusan_id, req.user.campus_id];
+      } else {
+        jurusanScope = '1=0';
+        jurusanScopeParams = [];
+      }
+    }
     const [rows] = await pool.query(
-      `SELECT id, nama_jurusan FROM jurusan WHERE id = ? LIMIT 1`,
-      [id]
+      `SELECT id, nama_jurusan FROM jurusan WHERE id = ? AND ${jurusanScope} LIMIT 1`,
+      [id, ...jurusanScopeParams]
     );
 
     if (rows.length === 0) {
@@ -72,8 +92,11 @@ const getJurusanById = async (req, res) => {
     }
 
     const [prodi] = await pool.query(
-      `SELECT id, jurusan_id, nama_prodi FROM prodi WHERE jurusan_id = ? ORDER BY nama_prodi ASC`,
-      [id]
+      `SELECT p.id, p.jurusan_id, p.nama_prodi
+       FROM prodi p JOIN jurusan j ON j.id = p.jurusan_id
+       WHERE p.jurusan_id = ? AND ${getProdiScope(req.user, 'p', 'j').sql}
+       ORDER BY p.nama_prodi ASC`,
+      [id, ...getProdiScope(req.user, 'p', 'j').params]
     );
 
     return res.status(200).json({
@@ -97,7 +120,8 @@ const getJurusanById = async (req, res) => {
 const createJurusan = async (req, res) => {
   const namaJurusan = normalizeName(req.body.nama_jurusan ?? req.body.nama);
 
-  if (!namaJurusan) {
+  const campusId = req.user.role === 'superadmin' ? Number(req.body.campus_id) : req.user.campus_id;
+  if (!namaJurusan || !campusId) {
     return res.status(400).json({
       success: false,
       message: 'Nama jurusan wajib diisi.',
@@ -106,8 +130,8 @@ const createJurusan = async (req, res) => {
 
   try {
     const [result] = await pool.query(
-      `INSERT INTO jurusan (nama_jurusan) VALUES (?)`,
-      [namaJurusan]
+      `INSERT INTO jurusan (nama_jurusan, campus_id) VALUES (?, ?)`,
+      [namaJurusan, campusId]
     );
 
     const [rows] = await pool.query(
@@ -153,8 +177,8 @@ const updateJurusan = async (req, res) => {
 
   try {
     const [existing] = await pool.query(
-      `SELECT id FROM jurusan WHERE id = ? LIMIT 1`,
-      [id]
+      `SELECT id FROM jurusan WHERE id = ? AND campus_id = ? LIMIT 1`,
+      [id, req.user.campus_id]
     );
     if (existing.length === 0) {
       return res.status(404).json({
@@ -169,8 +193,8 @@ const updateJurusan = async (req, res) => {
     ]);
 
     const [rows] = await pool.query(
-      `SELECT id, nama_jurusan FROM jurusan WHERE id = ?`,
-      [id]
+      `SELECT id, nama_jurusan FROM jurusan WHERE id = ? AND campus_id = ?`,
+      [id, req.user.campus_id]
     );
 
     return res.status(200).json({
@@ -203,8 +227,8 @@ const deleteJurusan = async (req, res) => {
 
   try {
     const [existing] = await pool.query(
-      `SELECT id, nama_jurusan FROM jurusan WHERE id = ? LIMIT 1`,
-      [id]
+      `SELECT id, nama_jurusan FROM jurusan WHERE id = ? AND campus_id = ? LIMIT 1`,
+      [id, req.user.campus_id]
     );
     if (existing.length === 0) {
       return res.status(404).json({
@@ -234,7 +258,7 @@ const deleteJurusan = async (req, res) => {
       });
     }
 
-    await pool.query(`DELETE FROM jurusan WHERE id = ?`, [id]);
+    await pool.query(`DELETE FROM jurusan WHERE id = ? AND campus_id = ?`, [id, req.user.campus_id]);
 
     return res.status(200).json({
       success: true,
@@ -270,7 +294,9 @@ const getProdiList = async (req, res) => {
     `;
     const params = [];
 
-    const conditions = [];
+    const scope = getProdiScope(req.user, 'p', 'j');
+    const conditions = [scope.sql];
+    params.push(...scope.params);
     if (jurusanId) {
       conditions.push(`p.jurusan_id = ?`);
       params.push(jurusanId);
@@ -310,8 +336,8 @@ const getProdiById = async (req, res) => {
     const [rows] = await pool.query(
       `SELECT p.id, p.jurusan_id, p.nama_prodi, j.nama_jurusan
        FROM prodi p JOIN jurusan j ON j.id = p.jurusan_id
-       WHERE p.id = ? LIMIT 1`,
-      [id]
+       WHERE p.id = ? AND ${getProdiScope(req.user, 'p', 'j').sql} LIMIT 1`,
+      [id, ...getProdiScope(req.user, 'p', 'j').params]
     );
 
     if (rows.length === 0) {
@@ -355,8 +381,8 @@ const createProdi = async (req, res) => {
 
   try {
     const [jurusan] = await pool.query(
-      `SELECT id FROM jurusan WHERE id = ? LIMIT 1`,
-      [jurusanId]
+      `SELECT id FROM jurusan WHERE id = ? AND campus_id = ? LIMIT 1`,
+      [jurusanId, req.user.campus_id]
     );
     if (jurusan.length === 0) {
       return res.status(400).json({
@@ -421,8 +447,9 @@ const updateProdi = async (req, res) => {
 
   try {
     const [existing] = await pool.query(
-      `SELECT id FROM prodi WHERE id = ? LIMIT 1`,
-      [id]
+      `SELECT p.id FROM prodi p JOIN jurusan j ON j.id = p.jurusan_id
+       WHERE p.id = ? AND ${getProdiScope(req.user, 'p', 'j').sql} LIMIT 1`,
+      [id, ...getProdiScope(req.user, 'p', 'j').params]
     );
     if (existing.length === 0) {
       return res.status(404).json({
@@ -432,8 +459,8 @@ const updateProdi = async (req, res) => {
     }
 
     const [jurusan] = await pool.query(
-      `SELECT id FROM jurusan WHERE id = ? LIMIT 1`,
-      [jurusanId]
+      `SELECT id FROM jurusan WHERE id = ? AND campus_id = ? LIMIT 1`,
+      [jurusanId, req.user.campus_id]
     );
     if (jurusan.length === 0) {
       return res.status(400).json({
@@ -484,8 +511,9 @@ const deleteProdi = async (req, res) => {
 
   try {
     const [existing] = await pool.query(
-      `SELECT id, nama_prodi FROM prodi WHERE id = ? LIMIT 1`,
-      [id]
+      `SELECT p.id, p.nama_prodi FROM prodi p JOIN jurusan j ON j.id = p.jurusan_id
+       WHERE p.id = ? AND ${getProdiScope(req.user, 'p', 'j').sql} LIMIT 1`,
+      [id, ...getProdiScope(req.user, 'p', 'j').params]
     );
     if (existing.length === 0) {
       return res.status(404).json({

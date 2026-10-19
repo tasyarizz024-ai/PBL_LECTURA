@@ -37,11 +37,11 @@ INSERT INTO users (email, password, role) VALUES
 
 
 INSERT INTO dosen (user_id, prodi_id, nip, nama, jabatan, foto, gps_enabled) VALUES
-  (1, 1, '198501012010011001', 'Reza Pratama, S.Kom., M.T.', 'Lektor', NULL, TRUE),
-  (2, 1, '198602022011012002', 'Siti Aminah, S.Kom., M.Kom.', 'Asisten Ahli', NULL, TRUE),
-  (3, 2, '198703032012011003', 'Budi Santoso, S.T., M.T.', 'Lektor Kepala', NULL, TRUE),
+  (1, 1, '198501012010011001', 'Reza Pratama, S.Kom., M.T.', 'Lektor', NULL, FALSE),
+  (2, 1, '198602022011012002', 'Siti Aminah, S.Kom., M.Kom.', 'Asisten Ahli', NULL, FALSE),
+  (3, 2, '198703032012011003', 'Budi Santoso, S.T., M.T.', 'Lektor Kepala', NULL, FALSE),
   (4, 2, '198804042013012004', 'Dewi Lestari, S.T., M.Eng.', 'Lektor', NULL, FALSE),
-  (5, 3, '198905052014011005', 'Andi Wijaya, S.P., M.Si.', 'Asisten Ahli', NULL, TRUE);
+  (5, 3, '198905052014011005', 'Andi Wijaya, S.P., M.Si.', 'Asisten Ahli', NULL, FALSE);
 
 -- ---------------------------------------------------------------------
 -- contoh akun mahasiswa & admin (password default: 'password123' untuk mhs, 'admin123' untuk admin)

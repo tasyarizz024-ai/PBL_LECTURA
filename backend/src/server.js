@@ -12,6 +12,8 @@ const jurusanProdiRoutes = require('./routes/jurusanProdiRoutes');
 const jadwalRoutes = require('./routes/jadwalRoutes');
 const appDosenRoutes = require('./routes/appDosenRoutes');
 const adminUserRoutes = require('./routes/adminUserRoutes');
+const mahasiswaRoutes = require('./routes/mahasiswaRoutes');
+const tenantRoutes = require('./routes/tenantRoutes');
 
 dotenv.config();
 
@@ -34,7 +36,8 @@ app.use('/api/jadwal-mengajar', jadwalRoutes);
 app.use('/api/app-dosen', appDosenRoutes);
 // API manajemen user admin
 app.use('/api/admin/users', adminUserRoutes);
-
+app.use('/api/mahasiswa', mahasiswaRoutes);
+app.use('/api/tenant', tenantRoutes);
 
 // Basic health check route
 app.get('/', (req, res) => {

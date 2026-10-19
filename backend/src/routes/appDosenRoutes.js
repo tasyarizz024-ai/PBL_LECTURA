@@ -10,6 +10,7 @@ const {
   updateJadwalMandiri,
   deleteJadwalMandiri,
   getRiwayat,
+  updateAvailability,
 } = require('../controllers/appDosenController');
 const { verifyToken, requireRole } = require('../middlewares/authMiddleware');
 
@@ -37,5 +38,6 @@ router.get('/jadwal', verifyToken, requireRole('dosen'), getJadwal);
 router.post('/jadwal', verifyToken, requireRole('dosen'), createJadwalMandiri);
 router.put('/jadwal/:id', verifyToken, requireRole('dosen'), updateJadwalMandiri);
 router.delete('/jadwal/:id', verifyToken, requireRole('dosen'), deleteJadwalMandiri);
+router.patch('/ketersediaan', verifyToken, requireRole('dosen'), updateAvailability);
 
 module.exports = router;

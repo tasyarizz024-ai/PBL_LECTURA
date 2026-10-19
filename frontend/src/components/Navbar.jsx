@@ -3,9 +3,10 @@ import theme from '../styles/theme';
 import ChangePasswordModal from './ChangePasswordModal';
 
 export default function Navbar({ activeTab = 'cari-dosen', onNavigate, user, onLogout }) {
-  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   return (
+    <>
     <header
       style={{
         backgroundColor: theme.colors.surfaceContainerLowest,
@@ -131,7 +132,7 @@ export default function Navbar({ activeTab = 'cari-dosen', onNavigate, user, onL
           </div>
           <button
             type="button"
-            onClick={() => setIsChangePasswordOpen(true)}
+            onClick={() => setShowPasswordModal(true)}
             title="Ganti Password"
             style={{
               display: 'flex',
@@ -178,11 +179,8 @@ export default function Navbar({ activeTab = 'cari-dosen', onNavigate, user, onL
         </div>
       </div>
 
-      <ChangePasswordModal
-        isOpen={isChangePasswordOpen}
-        onClose={() => setIsChangePasswordOpen(false)}
-      />
     </header>
+    {showPasswordModal && <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />}
+    </>
   );
 }
-

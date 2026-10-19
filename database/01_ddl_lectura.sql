@@ -54,7 +54,7 @@ CREATE TABLE dosen (
   nama          VARCHAR(100) NOT NULL,
   jabatan       VARCHAR(50),
   foto          VARCHAR(255),
-  gps_enabled   BOOLEAN NOT NULL DEFAULT TRUE,
+  gps_enabled   BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_dosen_user
     FOREIGN KEY (user_id) REFERENCES users(id)
     ON UPDATE CASCADE ON DELETE CASCADE,

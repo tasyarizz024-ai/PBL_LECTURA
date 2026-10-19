@@ -6,6 +6,7 @@ const navItems = [
   { key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
   { key: 'manajemen-user', label: 'Manajemen User', icon: 'manage_accounts' },
   { key: 'manajemen-dosen', label: 'Manajemen Dosen', icon: 'badge' },
+  { key: 'manajemen-mahasiswa', label: 'Manajemen Mahasiswa', icon: 'school' },
   { key: 'manajemen-gedung', label: 'Manajemen Gedung', icon: 'location_city' },
   { key: 'manajemen-jadwal', label: 'Manajemen Jadwal', icon: 'event_note' },
   { key: 'jurusan-prodi', label: 'Jurusan & Prodi', icon: 'account_tree' },
@@ -14,8 +15,14 @@ const navItems = [
 
 export default function AdminLayout({ activePage, onNavigate, user, onLogout, children }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
-
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const navForUser = user?.role === 'superadmin'
+    ? [{ key: 'manajemen-akses', label: 'Kampus', icon: 'domain' }]
+    : user?.role === 'admin_kampus'
+      ? [...navItems, { key: 'manajemen-akses', label: 'Kelola Admin Prodi', icon: 'admin_panel_settings' }]
+      : user?.role === 'admin_prodi'
+        ? navItems.filter((item) => ['dashboard', 'manajemen-dosen', 'manajemen-mahasiswa', 'manajemen-jadwal', 'log-aktivitas'].includes(item.key))
+        : navItems;
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: theme.colors.surface }}>
@@ -78,7 +85,7 @@ export default function AdminLayout({ activePage, onNavigate, user, onLogout, ch
 
         {/* Nav Items */}
         <nav style={{ flex: 1, padding: '0.75rem 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-          {navItems.map((item) => {
+          {navForUser.map((item) => {
             const isActive = activePage === item.key;
             return (
               <button
@@ -172,7 +179,9 @@ export default function AdminLayout({ activePage, onNavigate, user, onLogout, ch
               <div style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurface, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {user?.nama || 'Administrator'}
               </div>
-              <div style={{ fontSize: '12px', color: theme.colors.onSurfaceVariant }}>Admin</div>
+              <div style={{ fontSize: '12px', color: theme.colors.onSurfaceVariant }}>
+                {user?.role === 'superadmin' ? 'Superadmin' : user?.role === 'admin_prodi' ? 'Admin Prodi' : 'Admin Kampus'}
+              </div>
             </div>
           )}
           {!sidebarCollapsed && (
@@ -215,13 +224,13 @@ export default function AdminLayout({ activePage, onNavigate, user, onLogout, ch
         >
           <div>
             <h2 style={{ fontSize: '17px', fontWeight: 800, color: theme.colors.onSurface, margin: 0 }}>
-              {navItems.find((n) => n.key === activePage)?.label || 'Admin Panel'}
+              {navForUser.find((n) => n.key === activePage)?.label || 'Admin Panel'}
             </h2>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <button
               type="button"
-              onClick={() => setIsChangePasswordOpen(true)}
+              onClick={() => setShowPasswordModal(true)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -265,13 +274,7 @@ export default function AdminLayout({ activePage, onNavigate, user, onLogout, ch
           {children}
         </main>
       </div>
-
-      {/* Universal Change Password Modal */}
-      <ChangePasswordModal
-        isOpen={isChangePasswordOpen}
-        onClose={() => setIsChangePasswordOpen(false)}
-      />
+      {showPasswordModal && <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />}
     </div>
   );
 }
-

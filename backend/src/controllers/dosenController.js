@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { pool } = require('../config/db');
+const { getProdiScope } = require('../utils/tenantScope');
 
 /**
  * GET /api/dosen
@@ -28,9 +29,9 @@ const getDosenList = async (req, res) => {
       JOIN prodi p   ON d.prodi_id = p.id
       JOIN jurusan j ON p.jurusan_id = j.id
       JOIN users u   ON d.user_id = u.id
-      WHERE 1=1
+      WHERE ${getProdiScope(req.user, 'p', 'j').sql}
     `;
-    const queryParams = [];
+    const queryParams = [...getProdiScope(req.user, 'p', 'j').params];
 
     // Filter berdasarkan Prodi
     if (prodi_id) {
@@ -72,6 +73,7 @@ const getDosenById = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const scope = getProdiScope(req.user, 'p', 'j');
     const query = `
       SELECT 
         d.id, 
@@ -90,11 +92,11 @@ const getDosenById = async (req, res) => {
       JOIN prodi p   ON d.prodi_id = p.id
       JOIN jurusan j ON p.jurusan_id = j.id
       JOIN users u   ON d.user_id = u.id
-      WHERE d.id = ?
+      WHERE d.id = ? AND ${scope.sql}
       LIMIT 1
     `;
 
-    const [rows] = await pool.query(query, [id]);
+    const [rows] = await pool.query(query, [id, ...scope.params]);
 
     if (rows.length === 0) {
       return res.status(404).json({
@@ -134,6 +136,16 @@ const createDosen = async (req, res) => {
       });
     }
 
+    const scope = getProdiScope(req.user, 'p', 'j');
+    const [prodiRows] = await pool.query(
+      `SELECT p.id, j.campus_id FROM prodi p JOIN jurusan j ON j.id = p.jurusan_id
+       WHERE p.id = ? AND ${scope.sql} LIMIT 1`,
+      [Number(prodi_id), ...scope.params]
+    );
+    if (!prodiRows.length) {
+      return res.status(403).json({ success: false, message: 'Prodi di luar cakupan admin.' });
+    }
+
     // Default password jika tidak diberikan
     const plainPassword = password || 'dosen123';
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
@@ -141,11 +153,12 @@ const createDosen = async (req, res) => {
     // Eksekusi Stored Procedure sp_tambah_dosen
     // Parameter: (p_email, p_password, p_prodi_id, p_nip, p_nama, p_jabatan)
     await pool.query(
-      'CALL sp_tambah_dosen(?, ?, ?, ?, ?, ?)',
+      'CALL sp_tambah_dosen(?, ?, ?, ?, ?, ?, ?)',
       [
         email.trim(),
         hashedPassword,
         Number(prodi_id),
+        prodiRows[0].campus_id,
         nip.trim(),
         nama.trim(),
         jabatan ? jabatan.trim() : 'Asisten Ahli',
@@ -218,7 +231,13 @@ const updateDosen = async (req, res) => {
     const { nama, nip, jabatan, prodi_id, foto, gps_enabled, email } = req.body;
 
     // Periksa apakah dosen ada
-    const [existing] = await pool.query('SELECT * FROM dosen WHERE id = ?', [id]);
+    const scope = getProdiScope(req.user, 'p', 'j');
+    const [existing] = await pool.query(
+      `SELECT d.* FROM dosen d JOIN prodi p ON p.id = d.prodi_id
+       JOIN jurusan j ON j.id = p.jurusan_id
+       WHERE d.id = ? AND ${scope.sql}`,
+      [id, ...scope.params]
+    );
     if (existing.length === 0) {
       return res.status(404).json({
         success: false,
@@ -227,6 +246,23 @@ const updateDosen = async (req, res) => {
     }
 
     const currentDosen = existing[0];
+    if (prodi_id !== undefined) {
+      const [targetProdi] = await pool.query(
+        `SELECT p.id FROM prodi p JOIN jurusan j ON j.id = p.jurusan_id
+         WHERE p.id = ? AND ${scope.sql} LIMIT 1`,
+        [Number(prodi_id), ...scope.params]
+      );
+      if (!targetProdi.length) {
+        return res.status(403).json({ success: false, message: 'Prodi tujuan di luar cakupan admin.' });
+      }
+    }
+
+    if (gps_enabled !== undefined && ![false, 0, '0'].includes(gps_enabled)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Persetujuan berbagi lokasi hanya dapat diaktifkan oleh dosen yang bersangkutan.',
+      });
+    }
 
     // Update data pada tabel dosen
     await pool.query(
@@ -247,10 +283,25 @@ const updateDosen = async (req, res) => {
         jabatan !== undefined ? jabatan : currentDosen.jabatan,
         prodi_id !== undefined ? Number(prodi_id) : currentDosen.prodi_id,
         foto !== undefined ? foto : currentDosen.foto,
-        gps_enabled !== undefined ? Boolean(gps_enabled) : currentDosen.gps_enabled,
+        gps_enabled !== undefined ? 0 : currentDosen.gps_enabled,
         id,
       ]
     );
+
+    if (gps_enabled !== undefined) {
+      await pool.query(
+        `
+        INSERT INTO current_status (dosen_id, status_type, gedung_id, probabilitas, last_updated)
+        VALUES (?, 'tidak_diketahui', NULL, NULL, NOW())
+        ON DUPLICATE KEY UPDATE
+          status_type = 'tidak_diketahui',
+          gedung_id = NULL,
+          probabilitas = NULL,
+          last_updated = NOW()
+        `,
+        [id]
+      );
+    }
 
     // Update email di tabel users jika diikutsertakan
     if (email && email.trim() !== '') {
@@ -318,8 +369,11 @@ const deleteDosen = async (req, res) => {
 
     // Periksa eksistensi dosen dan dapatkan user_id
     const [rows] = await pool.query(
-      'SELECT id, user_id, nama, nip FROM dosen WHERE id = ?',
-      [id]
+      `SELECT d.id, d.user_id, d.nama, d.nip
+       FROM dosen d JOIN prodi p ON p.id = d.prodi_id
+       JOIN jurusan j ON j.id = p.jurusan_id
+       WHERE d.id = ? AND ${getProdiScope(req.user, 'p', 'j').sql}`,
+      [id, ...getProdiScope(req.user, 'p', 'j').params]
     );
 
     if (rows.length === 0) {
@@ -356,13 +410,15 @@ const deleteDosen = async (req, res) => {
  */
 const getProdiList = async (req, res) => {
   try {
+    const scope = getProdiScope(req.user, 'p', 'j');
     const query = `
       SELECT p.id, p.nama_prodi, j.id AS jurusan_id, j.nama_jurusan
       FROM prodi p
       JOIN jurusan j ON j.id = p.jurusan_id
+      WHERE ${scope.sql}
       ORDER BY j.nama_jurusan ASC, p.nama_prodi ASC
     `;
-    const [rows] = await pool.query(query);
+    const [rows] = await pool.query(query, scope.params);
 
     return res.status(200).json({
       success: true,

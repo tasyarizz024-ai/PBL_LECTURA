@@ -31,25 +31,46 @@ export default function ManajemenJadwal() {
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
   const [prodiList, setProdiList] = useState([]);
+  const [optionErrors, setOptionErrors] = useState({});
 
   const flash = useCallback((msg, type = 'success') => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); }, []);
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (filterProdi) params.append('prodi_id', filterProdi);
-      const [j, d, g, pp] = await Promise.all([
-        apiJson(`/api/jadwal-mengajar?${params}`),
-        apiJson('/api/dosen?limit=1000'),
-        apiJson('/api/gedung'),
-        apiJson('/api/jurusan-prodi/prodi'),
-      ]);
-      setList(j.data || []);
-      setDosenList(d.data || []);
-      setGedungList(g.data || []);
-      setProdiList(pp.data || []);
-    } catch (err) { flash(err.message, 'error'); } finally { setLoading(false); }
+    const params = new URLSearchParams();
+    if (filterProdi) params.append('prodi_id', filterProdi);
+    const results = await Promise.allSettled([
+      apiJson(`/api/jadwal-mengajar?${params}`),
+      apiJson('/api/dosen?limit=1000'),
+      apiJson('/api/gedung'),
+      apiJson('/api/jurusan-prodi/prodi'),
+    ]);
+    const [jadwalResult, dosenResult, gedungResult, prodiResult] = results;
+    const nextOptionErrors = {};
+
+    if (jadwalResult.status === 'fulfilled') setList(jadwalResult.value.data || []);
+    else flash(`Gagal memuat jadwal: ${jadwalResult.reason.message}`, 'error');
+
+    if (dosenResult.status === 'fulfilled') setDosenList(dosenResult.value.data || []);
+    else {
+      setDosenList([]);
+      nextOptionErrors.dosen = dosenResult.reason.message || 'Gagal memuat daftar dosen.';
+    }
+
+    if (gedungResult.status === 'fulfilled') setGedungList(gedungResult.value.data || []);
+    else {
+      setGedungList([]);
+      nextOptionErrors.gedung = gedungResult.reason.message || 'Gagal memuat daftar gedung.';
+    }
+
+    if (prodiResult.status === 'fulfilled') setProdiList(prodiResult.value.data || []);
+    else flash(`Gagal memuat program studi: ${prodiResult.reason.message}`, 'error');
+
+    setOptionErrors(nextOptionErrors);
+    if (Object.keys(nextOptionErrors).length) {
+      flash('Daftar dosen atau gedung gagal dimuat. Periksa pesan di form jadwal.', 'error');
+    }
+    setLoading(false);
   }, [filterProdi, flash]);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
@@ -109,7 +130,7 @@ export default function ManajemenJadwal() {
           <button type="button" onClick={() => { setImportOpen(true); setImportResult(null); setImportError(''); }} style={{ padding: '0.7rem 1.2rem', borderRadius: theme.borderRadius.full, border: `1px solid ${theme.colors.primary}`, backgroundColor: theme.colors.primaryFixed, color: theme.colors.primary, fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}>
             Import CSV/Excel
           </button>
-          <button type="button" onClick={() => setModal({ data: null })} style={{ padding: '0.7rem 1.4rem', borderRadius: theme.borderRadius.full, border: 'none', background: theme.gradients.primaryCta, color: '#fff', fontWeight: 700, fontSize: '16px', cursor: 'pointer', boxShadow: theme.shadows.btnPrimary }}>
+          <button type="button" onClick={() => { setModal({ data: null }); fetchAll(); }} style={{ padding: '0.7rem 1.4rem', borderRadius: theme.borderRadius.full, border: 'none', background: theme.gradients.primaryCta, color: '#fff', fontWeight: 700, fontSize: '16px', cursor: 'pointer', boxShadow: theme.shadows.btnPrimary }}>
             + Tambah Jadwal
           </button>
         </div>
@@ -155,7 +176,7 @@ export default function ManajemenJadwal() {
         </div>
       </div>
 
-      {modal && <JadwalFormModal data={modal.data} dosenList={dosenList} gedungList={gedungList} onClose={() => setModal(null)} onSubmit={handleSubmit} />}
+      {modal && <JadwalFormModal data={modal.data} dosenList={dosenList} gedungList={gedungList} optionErrors={optionErrors} loadingOptions={loading} onClose={() => setModal(null)} onSubmit={handleSubmit} />}
 
       {deleteTarget && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 200, backgroundColor: 'rgba(17,28,45,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -201,7 +222,7 @@ export default function ManajemenJadwal() {
   );
 }
 
-function JadwalFormModal({ data, dosenList, gedungList, onClose, onSubmit }) {
+function JadwalFormModal({ data, dosenList, gedungList, optionErrors, loadingOptions, onClose, onSubmit }) {
   const [form, setForm] = useState(() => data
     ? { id: data.id, dosen_id: data.dosen_id, hari: data.hari, jam_mulai: String(data.jam_mulai).slice(0, 5), jam_selesai: String(data.jam_selesai).slice(0, 5), mata_kuliah: data.mata_kuliah, gedung_id: data.gedung_id }
     : EMPTY_FORM);
@@ -223,10 +244,16 @@ function JadwalFormModal({ data, dosenList, gedungList, onClose, onSubmit }) {
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, backgroundColor: 'rgba(17,28,45,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <form onSubmit={handleSubmit} style={{ backgroundColor: theme.colors.surfaceContainerLowest, borderRadius: theme.borderRadius.lg, padding: '2rem', maxWidth: '460px', width: '90%', display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
         <h3 style={{ margin: 0 }}>{data ? 'Edit Jadwal' : 'Tambah Jadwal'}</h3>
+        {optionErrors.dosen && <div role="alert" style={{ color: theme.colors.error, fontSize: '14px' }}>Daftar dosen gagal dimuat: {optionErrors.dosen}</div>}
         <select value={form.dosen_id} onChange={handleChange('dosen_id')} style={fieldStyle}>
-          <option value="">-- Pilih Dosen --</option>
+          <option value="">{loadingOptions ? 'Memuat daftar dosen...' : dosenList.length ? '-- Pilih Dosen --' : 'Belum ada dosen di cakupan ini'}</option>
           {dosenList.map((d) => <option key={d.id} value={d.id}>{d.nama}</option>)}
         </select>
+        {!loadingOptions && !optionErrors.dosen && dosenList.length === 0 && (
+          <div style={{ color: theme.colors.onSurfaceVariant, fontSize: '13px' }}>
+            Tambahkan dosen terlebih dahulu melalui menu Manajemen Dosen.
+          </div>
+        )}
         <select value={form.hari} onChange={handleChange('hari')} style={fieldStyle}>
           {HARI.map((h) => <option key={h} value={h}>{h}</option>)}
         </select>
@@ -235,10 +262,16 @@ function JadwalFormModal({ data, dosenList, gedungList, onClose, onSubmit }) {
           <input type="time" value={form.jam_selesai} onChange={handleChange('jam_selesai')} style={fieldStyle} />
         </div>
         <input placeholder="Mata Kuliah" value={form.mata_kuliah} onChange={handleChange('mata_kuliah')} style={fieldStyle} />
+        {optionErrors.gedung && <div role="alert" style={{ color: theme.colors.error, fontSize: '14px' }}>Daftar gedung gagal dimuat: {optionErrors.gedung}</div>}
         <select value={form.gedung_id} onChange={handleChange('gedung_id')} style={fieldStyle}>
-          <option value="">-- Pilih Gedung --</option>
+          <option value="">{loadingOptions ? 'Memuat daftar gedung...' : gedungList.length ? '-- Pilih Gedung --' : 'Belum ada gedung di kampus ini'}</option>
           {gedungList.map((g) => <option key={g.id} value={g.id}>{g.nama_gedung}</option>)}
         </select>
+        {!loadingOptions && !optionErrors.gedung && gedungList.length === 0 && (
+          <div style={{ color: theme.colors.onSurfaceVariant, fontSize: '13px' }}>
+            Tambahkan gedung terlebih dahulu melalui menu Manajemen Gedung.
+          </div>
+        )}
         {error && <div style={{ color: theme.colors.error, fontSize: '16px' }}>{error}</div>}
         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
           <button type="button" onClick={onClose} style={{ padding: '0.6rem 1.25rem', borderRadius: theme.borderRadius.full, border: `1px solid ${theme.colors.outlineVariant}`, background: 'transparent', cursor: 'pointer' }}>Batal</button>

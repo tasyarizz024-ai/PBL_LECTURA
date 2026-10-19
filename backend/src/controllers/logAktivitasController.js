@@ -1,4 +1,5 @@
 const { pool } = require('../config/db');
+const { getTenantViewScope } = require('../utils/tenantScope');
 
 /**
  * GET /api/log-aktivitas
@@ -20,8 +21,9 @@ const getLogAktivitas = async (req, res) => {
     const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
     const offset = (pageNum - 1) * limitNum;
 
-    let whereClause = ' WHERE 1=1';
-    const queryParams = [];
+    const scope = getTenantViewScope(req.user);
+    let whereClause = ` WHERE ${scope.sql}`;
+    const queryParams = [...scope.params];
 
     // Filter by dosen_id
     if (dosen_id) {

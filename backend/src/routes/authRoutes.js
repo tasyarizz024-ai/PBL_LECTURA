@@ -13,4 +13,3 @@ router.get('/me', verifyToken, getMe);
 router.patch('/change-password', verifyToken, changePassword);
 
 module.exports = router;
-

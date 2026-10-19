@@ -1,4 +1,5 @@
 const { pool } = require('../config/db');
+const { getCampusScope } = require('../utils/tenantScope');
 
 /**
  * GET /api/gedung
@@ -13,10 +14,12 @@ const getGedungList = async (req, res) => {
       SELECT id, nama_gedung, latitude, longitude, radius_meter
       FROM gedung
     `;
-    const queryParams = [];
+    const scope = getCampusScope(req.user, 'gedung');
+    const queryParams = [...scope.params];
+    query += ` WHERE ${scope.sql}`;
 
     if (search && search.trim() !== '') {
-      query += ` WHERE nama_gedung LIKE ?`;
+      query += ` AND nama_gedung LIKE ?`;
       queryParams.push(`%${search.trim()}%`);
     }
 
@@ -48,8 +51,9 @@ const getGedungById = async (req, res) => {
     const { id } = req.params;
 
     const [rows] = await pool.query(
-      `SELECT id, nama_gedung, latitude, longitude, radius_meter FROM gedung WHERE id = ? LIMIT 1`,
-      [id]
+      `SELECT id, nama_gedung, latitude, longitude, radius_meter FROM gedung
+       WHERE id = ? AND ${getCampusScope(req.user, 'gedung').sql} LIMIT 1`,
+      [id, ...getCampusScope(req.user, 'gedung').params]
     );
 
     if (rows.length === 0) {
@@ -117,8 +121,8 @@ const createGedung = async (req, res) => {
     }
 
     const [result] = await pool.query(
-      `INSERT INTO gedung (nama_gedung, latitude, longitude, radius_meter) VALUES (?, ?, ?, ?)`,
-      [gedungName, lat, lng, radius]
+      `INSERT INTO gedung (nama_gedung, latitude, longitude, radius_meter, campus_id) VALUES (?, ?, ?, ?, ?)`,
+      [gedungName, lat, lng, radius, req.user.campus_id]
     );
 
     const [created] = await pool.query(
@@ -152,7 +156,10 @@ const updateGedung = async (req, res) => {
     const { nama_gedung, nama, latitude, longitude, radius_meter } = req.body;
 
     // Periksa keberadaan gedung
-    const [existing] = await pool.query('SELECT * FROM gedung WHERE id = ?', [id]);
+    const [existing] = await pool.query(
+      `SELECT * FROM gedung WHERE id = ? AND ${getCampusScope(req.user, 'gedung').sql}`,
+      [id, ...getCampusScope(req.user, 'gedung').params]
+    );
     if (existing.length === 0) {
       return res.status(404).json({
         success: false,
@@ -191,9 +198,9 @@ const updateGedung = async (req, res) => {
       `
       UPDATE gedung
       SET nama_gedung = ?, latitude = ?, longitude = ?, radius_meter = ?
-      WHERE id = ?
+      WHERE id = ? AND campus_id = ?
       `,
-      [updatedNama, updatedLat, updatedLng, updatedRadius, id]
+      [updatedNama, updatedLat, updatedLng, updatedRadius, id, req.user.campus_id]
     );
 
     const [updated] = await pool.query(
@@ -226,8 +233,8 @@ const deleteGedung = async (req, res) => {
     const { id } = req.params;
 
     const [existing] = await pool.query(
-      'SELECT id, nama_gedung FROM gedung WHERE id = ?',
-      [id]
+      `SELECT id, nama_gedung FROM gedung WHERE id = ? AND ${getCampusScope(req.user, 'gedung').sql}`,
+      [id, ...getCampusScope(req.user, 'gedung').params]
     );
 
     if (existing.length === 0) {
@@ -239,7 +246,7 @@ const deleteGedung = async (req, res) => {
 
     const gedungName = existing[0].nama_gedung;
 
-    await pool.query('DELETE FROM gedung WHERE id = ?', [id]);
+    await pool.query('DELETE FROM gedung WHERE id = ? AND campus_id = ?', [id, req.user.campus_id]);
 
     return res.status(200).json({
       success: true,

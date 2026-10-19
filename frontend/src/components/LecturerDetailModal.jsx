@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { apiJson } from '../lib/api';
 import theme from '../styles/theme';
 import GedungStaticMap from './GedungStaticMap';
+import RealtimeLocationMap from './RealtimeLocationMap';
 
 export default function LecturerDetailModal({ lecturerId, onClose }) {
   const [detail, setDetail] = useState(null);
+  const [realtimeLocation, setRealtimeLocation] = useState(null);
+  const [sharingEnabled, setSharingEnabled] = useState(false);
+  const [locationError, setLocationError] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showWeekly, setShowWeekly] = useState(false);
@@ -35,6 +39,31 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
     fetchDetail();
     return () => {
       isMounted = false;
+    };
+  }, [lecturerId]);
+
+  useEffect(() => {
+    if (!lecturerId) return undefined;
+
+    let active = true;
+    const fetchLocation = async () => {
+      try {
+        const result = await apiJson(`/api/pencarian-dosen/${lecturerId}/lokasi-realtime`);
+        if (active) {
+          setSharingEnabled(Boolean(result.data?.sharing_enabled));
+          setRealtimeLocation(result.data?.location || null);
+          setLocationError('');
+        }
+      } catch (err) {
+        if (active) setLocationError(err.message || 'Gagal memuat lokasi realtime.');
+      }
+    };
+
+    fetchLocation();
+    const interval = window.setInterval(fetchLocation, 15_000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
     };
   }, [lecturerId]);
 
@@ -162,6 +191,29 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
               </div>
             </div>
 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: '0.85rem 1rem',
+              marginBottom: '1rem',
+              borderRadius: theme.borderRadius.default,
+              backgroundColor: detail.status_ketersediaan === 'tersedia' ? '#d1fae5' : theme.colors.surfaceContainerLow,
+              color: detail.status_ketersediaan === 'tersedia' ? '#065f46' : theme.colors.onSurfaceVariant,
+            }}>
+              <strong>
+                {detail.status_ketersediaan === 'tersedia'
+                  ? 'Dosen menyatakan tersedia'
+                  : 'Dosen belum menyatakan tersedia'}
+              </strong>
+              {detail.status_ketersediaan === 'tersedia' && detail.ketersediaan_sampai && (
+                <span style={{ fontSize: '13px', whiteSpace: 'nowrap' }}>
+                  Sampai {new Date(detail.ketersediaan_sampai).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              )}
+            </div>
+
             {/* Status Card Utama */}
             <div
               style={{
@@ -174,7 +226,7 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                 <span style={{ fontSize: '16px', fontWeight: 700, textTransform: 'uppercase', color: theme.colors.onSurfaceVariant, letterSpacing: '0.04em' }}>
-                  Status Ketersediaan
+                  Status Lokasi
                 </span>
                 <span
                   style={{
@@ -238,6 +290,39 @@ export default function LecturerDetailModal({ lecturerId, onClose }) {
                 </div>
               )}
                 </div>
+              </div>
+
+              <div style={{
+                marginTop: '1rem',
+                paddingTop: '1rem',
+                borderTop: `1px dashed ${theme.colors.outlineVariant}`,
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '0.65rem' }}>
+                  <strong style={{ color: theme.colors.onSurface }}>Lokasi GPS realtime</strong>
+                  <span style={{
+                    color: realtimeLocation ? theme.colors.status.realtime.text : theme.colors.onSurfaceVariant,
+                    fontSize: '13px',
+                    fontWeight: 700,
+                  }}>
+                    {realtimeLocation ? 'LIVE' : sharingEnabled ? 'Menunggu lokasi baru' : 'Tidak dibagikan'}
+                  </span>
+                </div>
+                {locationError ? (
+                  <div role="alert" style={{ color: theme.colors.error, fontSize: '14px' }}>{locationError}</div>
+                ) : realtimeLocation ? (
+                  <>
+                    <RealtimeLocationMap location={realtimeLocation} lecturerName={detail.nama} />
+                    <div style={{ marginTop: '0.45rem', fontSize: '13px', color: theme.colors.onSurfaceVariant }}>
+                      Lokasi dibagikan atas izin dosen. Diperbarui {new Date(realtimeLocation.recorded_at).toLocaleTimeString('id-ID')}.
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ color: theme.colors.onSurfaceVariant, fontSize: '14px', lineHeight: 1.5 }}>
+                    {sharingEnabled
+                      ? 'Persetujuan aktif, tetapi belum ada koordinat baru dalam 2 menit terakhir.'
+                      : 'Dosen belum mengizinkan berbagi lokasi GPS presisi.'}
+                  </div>
+                )}
               </div>
 
               {detail.status_terkini?.last_updated && (

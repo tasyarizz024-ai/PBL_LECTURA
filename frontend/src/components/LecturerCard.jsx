@@ -11,6 +11,8 @@ export default function LecturerCard({ lecturer, onSelect }) {
     nama_prodi,
     nama_jurusan,
     status_type,
+    status_ketersediaan,
+    ketersediaan_sampai,
     nama_gedung,
     probabilitas,
   } = lecturer;
@@ -147,6 +149,26 @@ export default function LecturerCard({ lecturer, onSelect }) {
         >
           NIP: {nip} • {jabatan || 'Dosen'}
         </p>
+
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.35rem',
+          padding: '0.3rem 0.65rem',
+          marginBottom: '0.85rem',
+          borderRadius: theme.borderRadius.full,
+          backgroundColor: status_ketersediaan === 'tersedia' ? '#d1fae5' : theme.colors.surfaceContainerLow,
+          color: status_ketersediaan === 'tersedia' ? '#065f46' : theme.colors.onSurfaceVariant,
+          fontSize: '13px',
+          fontWeight: 700,
+        }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+            {status_ketersediaan === 'tersedia' ? 'event_available' : 'event_busy'}
+          </span>
+          {status_ketersediaan === 'tersedia'
+            ? `Menyatakan tersedia sampai ${new Date(ketersediaan_sampai).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`
+            : 'Belum menyatakan tersedia'}
+        </div>
 
         {/* Location info box */}
         <div

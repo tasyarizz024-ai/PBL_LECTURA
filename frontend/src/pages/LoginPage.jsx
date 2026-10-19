@@ -3,7 +3,7 @@ import { apiJson, setSession } from '../lib/api';
 import theme from '../styles/theme';
 
 export default function LoginPage({ onLoginSuccess }) {
-  const [activeTab, setActiveTab] = useState('mahasiswa'); // 'mahasiswa' | 'dosen' | 'admin'
+  const [activeTab, setActiveTab] = useState('mahasiswa');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -53,13 +53,11 @@ export default function LoginPage({ onLoginSuccess }) {
     }
   };
 
-  const placeholderText =
-    activeTab === 'mahasiswa'
-      ? 'NIM atau Email Kampus'
-      : activeTab === 'dosen'
-      ? 'NIP atau Email Dosen'
-      : 'Email Admin';
-
+  const placeholderText = {
+    mahasiswa: 'NIM atau Email Kampus',
+    dosen: 'NIP atau Email Kampus',
+    admin: 'Email Admin',
+  }[activeTab];
 
   return (
     <div
@@ -411,9 +409,9 @@ export default function LoginPage({ onLoginSuccess }) {
             ) : (
               <>
                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-                  {activeTab === 'mahasiswa' ? 'login' : 'admin_panel_settings'}
+                  {activeTab === 'admin' ? 'admin_panel_settings' : 'login'}
                 </span>
-                Masuk sebagai {activeTab === 'mahasiswa' ? 'Mahasiswa' : 'Admin'}
+                Masuk sebagai {activeTab === 'mahasiswa' ? 'Mahasiswa' : activeTab === 'dosen' ? 'Dosen' : 'Admin'}
               </>
             )}
           </button>
