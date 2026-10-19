@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import theme from '../styles/theme';
+import ChangePasswordModal from './ChangePasswordModal';
 
 export default function Navbar({ activeTab = 'cari-dosen', onNavigate, user, onLogout }) {
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+
   return (
     <header
       style={{
@@ -126,6 +129,28 @@ export default function Navbar({ activeTab = 'cari-dosen', onNavigate, user, onL
               </div>
             </div>
           </div>
+          <button
+            type="button"
+            onClick={() => setIsChangePasswordOpen(true)}
+            title="Ganti Password"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              padding: '0.35rem 0.85rem',
+              backgroundColor: theme.colors.surfaceContainerLow,
+              borderRadius: theme.borderRadius.full,
+              border: `1px solid ${theme.colors.surfaceContainer}`,
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 700,
+              color: theme.colors.primary,
+              fontFamily: theme.typography.fontFamily.base,
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>lock_reset</span>
+            Password
+          </button>
           {onLogout && (
             <button
               type="button"
@@ -140,7 +165,7 @@ export default function Navbar({ activeTab = 'cari-dosen', onNavigate, user, onL
                 borderRadius: theme.borderRadius.full,
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: '16px',
+                fontSize: '13px',
                 fontWeight: 700,
                 color: theme.colors.error,
                 fontFamily: theme.typography.fontFamily.base,
@@ -152,6 +177,12 @@ export default function Navbar({ activeTab = 'cari-dosen', onNavigate, user, onL
           )}
         </div>
       </div>
+
+      <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
     </header>
   );
 }
+

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import theme from '../styles/theme';
+import ChangePasswordModal from './ChangePasswordModal';
 
 const navItems = [
   { key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-  { key: 'manajemen-dosen', label: 'Manajemen Dosen', icon: 'manage_accounts' },
+  { key: 'manajemen-user', label: 'Manajemen User', icon: 'manage_accounts' },
+  { key: 'manajemen-dosen', label: 'Manajemen Dosen', icon: 'badge' },
   { key: 'manajemen-gedung', label: 'Manajemen Gedung', icon: 'location_city' },
   { key: 'manajemen-jadwal', label: 'Manajemen Jadwal', icon: 'event_note' },
   { key: 'jurusan-prodi', label: 'Jurusan & Prodi', icon: 'account_tree' },
@@ -12,6 +14,8 @@ const navItems = [
 
 export default function AdminLayout({ activePage, onNavigate, user, onLogout, children }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: theme.colors.surface }}>
@@ -214,13 +218,36 @@ export default function AdminLayout({ activePage, onNavigate, user, onLogout, ch
               {navItems.find((n) => n.key === activePage)?.label || 'Admin Panel'}
             </h2>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <button
+              type="button"
+              onClick={() => setIsChangePasswordOpen(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.4rem 0.85rem',
+                backgroundColor: theme.colors.surfaceContainerLow,
+                border: `1px solid ${theme.colors.surfaceContainer}`,
+                borderRadius: theme.borderRadius.full,
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: 700,
+                color: theme.colors.primary,
+                transition: 'background 0.15s ease',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                lock_reset
+              </span>
+              <span>Ganti Password</span>
+            </button>
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.4rem',
-                padding: '0.35rem 0.85rem',
+                padding: '0.4rem 0.85rem',
                 backgroundColor: theme.colors.errorContainer,
                 borderRadius: theme.borderRadius.full,
                 cursor: 'pointer',
@@ -228,7 +255,7 @@ export default function AdminLayout({ activePage, onNavigate, user, onLogout, ch
               onClick={onLogout}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '15px', color: theme.colors.error }}>logout</span>
-              <span style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.error }}>Keluar</span>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: theme.colors.error }}>Keluar</span>
             </div>
           </div>
         </header>
@@ -238,6 +265,13 @@ export default function AdminLayout({ activePage, onNavigate, user, onLogout, ch
           {children}
         </main>
       </div>
+
+      {/* Universal Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
     </div>
   );
 }
+

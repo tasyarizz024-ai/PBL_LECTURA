@@ -214,7 +214,67 @@ const getMe = async (req, res) => {
   }
 };
 
+/**
+ * Ganti Password Mandiri (Mahasiswa / Dosen / Admin)
+ * PATCH /api/auth/change-password
+ * Body: { oldPassword, newPassword }
+ */
+const changePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password lama dan password baru wajib diisi.',
+      });
+    }
+
+    if (typeof newPassword !== 'string' || newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password baru minimal harus 6 karakter.',
+      });
+    }
+
+    const [rows] = await pool.query('SELECT id, password FROM users WHERE id = ? LIMIT 1', [userId]);
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Pengguna tidak ditemukan.',
+      });
+    }
+
+    const user = rows[0];
+    const isOldValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isOldValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password lama tidak sesuai.',
+      });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    await pool.query('UPDATE users SET password = ? WHERE id = ?', [hashedNewPassword, userId]);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Password berhasil diperbarui.',
+    });
+  } catch (error) {
+    console.error('ChangePassword Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal memperbarui password.',
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   login,
   getMe,
+  changePassword,
 };
+

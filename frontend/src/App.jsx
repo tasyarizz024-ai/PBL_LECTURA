@@ -7,7 +7,10 @@ import ManajemenGedung from './pages/ManajemenGedung';
 import LogAktivitas from './pages/LogAktivitas';
 import JurusanProdi from './pages/JurusanProdi';
 import ManajemenJadwal from './pages/ManajemenJadwal';
+import ManajemenUser from './pages/ManajemenUser';
+import DosenDashboard from './pages/DosenDashboard';
 import { clearSession, getStoredUser, SESSION_EXPIRED_EVENT } from './lib/api';
+
 import Navbar from './components/Navbar';
 import AdminLayout from './components/AdminLayout';
 import theme from './styles/theme';
@@ -90,11 +93,12 @@ function App() {
     const renderAdminPage = () => {
       switch (adminPage) {
         case 'dashboard':       return <AdminDashboard />;
+        case 'manajemen-user':  return <ManajemenUser />;
         case 'manajemen-dosen': return <ManajemenDosen />;
         case 'manajemen-gedung':return <ManajemenGedung />;
-        case 'log-aktivitas':   return <LogAktivitas />;
-        case 'jurusan-prodi':    return <JurusanProdi />;
         case 'manajemen-jadwal': return <ManajemenJadwal />;
+        case 'jurusan-prodi':    return <JurusanProdi />;
+        case 'log-aktivitas':   return <LogAktivitas />;
         default:                return <AdminDashboard />;
       }
     };
@@ -111,7 +115,13 @@ function App() {
     );
   }
 
+  // ── Dosen ──────────────────────────────────────────────────────────────────
+  if (user.role === 'dosen') {
+    return <DosenDashboard onLogout={handleLogout} />;
+  }
+
   // ── Mahasiswa ──────────────────────────────────────────────────────────────
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: theme.colors.surface, position: 'relative' }}>
       {/* Ambient background glows */}

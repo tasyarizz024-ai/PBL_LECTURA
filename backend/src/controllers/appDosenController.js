@@ -519,6 +519,12 @@ const getRiwayat = async (req, res) => {
       [dosen.id, limit, offset]
     );
 
+    const formattedRows = rows.map((r) => ({
+      ...r,
+      latitude: r.latitude != null ? Number(r.latitude) : null,
+      longitude: r.longitude != null ? Number(r.longitude) : null,
+    }));
+
     return res.status(200).json({
       success: true,
       pagination: {
@@ -527,13 +533,301 @@ const getRiwayat = async (req, res) => {
         current_page: page,
         per_page: limit,
       },
-      data: rows,
+      data: formattedRows,
     });
   } catch (error) {
+
     console.error('appDosen getRiwayat Error:', error);
     return res.status(500).json({
       success: false,
       message: 'Gagal mengambil riwayat lokasi.',
+      error: error.message,
+    });
+  }
+};
+
+// ── Helper Jadwal Dosen ───────────────────────────────────────────────────
+const HARI_VALID_JADWAL = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+
+const isValidTimeStr = (t) => /^([01]?\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/.test(String(t).trim());
+
+const formatToTime = (t) => {
+  const s = String(t).trim();
+  return s.length === 5 ? `${s}:00` : s;
+};
+
+const checkJadwalConflict = async (dosen_id, hari, jam_mulai, jam_selesai, excludeId = null) => {
+  const [rows] = await pool.query(
+    `SELECT COUNT(*) AS c FROM jadwal_mengajar
+     WHERE dosen_id = ? AND hari = ? AND jam_mulai < ? AND jam_selesai > ?
+     ${excludeId ? 'AND id != ?' : ''}`,
+    excludeId
+      ? [dosen_id, hari, formatToTime(jam_selesai), formatToTime(jam_mulai), excludeId]
+      : [dosen_id, hari, formatToTime(jam_selesai), formatToTime(jam_mulai)]
+  );
+  return rows[0].c > 0;
+};
+
+/**
+ * POST /api/app-dosen/jadwal
+ * Tambah jadwal mengajar mandiri oleh dosen yang login
+ * Body: { hari, jam_mulai, jam_selesai, mata_kuliah, gedung_id }
+ */
+const createJadwalMandiri = async (req, res) => {
+  try {
+    const dosen = await getDosenByUserId(req.user.id);
+    if (!dosen) {
+      return res.status(404).json({
+        success: false,
+        message: 'Akun ini tidak terdaftar sebagai dosen.',
+      });
+    }
+
+    const { hari, jam_mulai, jam_selesai, mata_kuliah, gedung_id } = req.body;
+
+    if (!hari || !jam_mulai || !jam_selesai || !mata_kuliah || !gedung_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Semua field (hari, jam_mulai, jam_selesai, mata_kuliah, gedung_id) wajib diisi.',
+      });
+    }
+
+    const hariLower = String(hari).trim().toLowerCase();
+    if (!HARI_VALID_JADWAL.includes(hariLower)) {
+      return res.status(400).json({
+        success: false,
+        message: `Hari tidak valid. Pilih salah satu: ${HARI_VALID_JADWAL.join(', ')}.`,
+      });
+    }
+
+    if (!isValidTimeStr(jam_mulai) || !isValidTimeStr(jam_selesai)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Format jam tidak valid (gunakan format HH:MM).',
+      });
+    }
+
+    const startFormatted = formatToTime(jam_mulai);
+    const endFormatted = formatToTime(jam_selesai);
+
+    if (endFormatted <= startFormatted) {
+      return res.status(400).json({
+        success: false,
+        message: 'Jam selesai harus lebih besar dari jam mulai.',
+      });
+    }
+
+    const [gedungRows] = await pool.query('SELECT id, nama_gedung FROM gedung WHERE id = ?', [gedung_id]);
+    if (gedungRows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Gedung yang dipilih tidak ditemukan.',
+      });
+    }
+
+    // Cek bentrok jadwal
+    const bentrok = await checkJadwalConflict(dosen.id, hariLower, startFormatted, endFormatted);
+    if (bentrok) {
+      return res.status(409).json({
+        success: false,
+        message: 'Bentrok: Anda sudah memiliki jadwal mengajar lain yang bertabrakan pada hari dan rentang jam tersebut.',
+      });
+    }
+
+    const [insertResult] = await pool.query(
+      `INSERT INTO jadwal_mengajar (dosen_id, hari, jam_mulai, jam_selesai, mata_kuliah, gedung_id)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [dosen.id, hariLower, startFormatted, endFormatted, mata_kuliah.trim(), gedung_id]
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: 'Jadwal mengajar berhasil ditambahkan.',
+      data: {
+        id: insertResult.insertId,
+        dosen_id: dosen.id,
+        hari: hariLower,
+        jam_mulai: startFormatted,
+        jam_selesai: endFormatted,
+        mata_kuliah: mata_kuliah.trim(),
+        gedung_id,
+        nama_gedung: gedungRows[0].nama_gedung,
+      },
+    });
+  } catch (error) {
+    console.error('createJadwalMandiri Error:', error);
+    if (error.sqlState === '45000' || /jam_selesai/.test(error.message)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Jam selesai harus lebih besar dari jam mulai.',
+      });
+    }
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal menambahkan jadwal mengajar.',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * PUT /api/app-dosen/jadwal/:id
+ * Edit jadwal mengajar milik dosen sendiri
+ */
+const updateJadwalMandiri = async (req, res) => {
+  try {
+    const dosen = await getDosenByUserId(req.user.id);
+    if (!dosen) {
+      return res.status(404).json({
+        success: false,
+        message: 'Akun ini tidak terdaftar sebagai dosen.',
+      });
+    }
+
+    const jadwalId = Number(req.params.id);
+    if (!jadwalId) {
+      return res.status(400).json({ success: false, message: 'ID jadwal tidak valid.' });
+    }
+
+    // Pastikan jadwal milik dosen yang sedang login
+    const [existRows] = await pool.query(
+      'SELECT id FROM jadwal_mengajar WHERE id = ? AND dosen_id = ? LIMIT 1',
+      [jadwalId, dosen.id]
+    );
+    if (existRows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Jadwal tidak ditemukan atau Anda tidak memiliki akses untuk mengubah jadwal ini.',
+      });
+    }
+
+    const { hari, jam_mulai, jam_selesai, mata_kuliah, gedung_id } = req.body;
+
+    if (!hari || !jam_mulai || !jam_selesai || !mata_kuliah || !gedung_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Semua field (hari, jam_mulai, jam_selesai, mata_kuliah, gedung_id) wajib diisi.',
+      });
+    }
+
+    const hariLower = String(hari).trim().toLowerCase();
+    if (!HARI_VALID_JADWAL.includes(hariLower)) {
+      return res.status(400).json({
+        success: false,
+        message: `Hari tidak valid. Pilih salah satu: ${HARI_VALID_JADWAL.join(', ')}.`,
+      });
+    }
+
+    if (!isValidTimeStr(jam_mulai) || !isValidTimeStr(jam_selesai)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Format jam tidak valid (gunakan format HH:MM).',
+      });
+    }
+
+    const startFormatted = formatToTime(jam_mulai);
+    const endFormatted = formatToTime(jam_selesai);
+
+    if (endFormatted <= startFormatted) {
+      return res.status(400).json({
+        success: false,
+        message: 'Jam selesai harus lebih besar dari jam mulai.',
+      });
+    }
+
+    const [gedungRows] = await pool.query('SELECT id, nama_gedung FROM gedung WHERE id = ?', [gedung_id]);
+    if (gedungRows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Gedung yang dipilih tidak ditemukan.',
+      });
+    }
+
+    // Cek bentrok jadwal (kecualikan jadwalId saat ini)
+    const bentrok = await checkJadwalConflict(dosen.id, hariLower, startFormatted, endFormatted, jadwalId);
+    if (bentrok) {
+      return res.status(409).json({
+        success: false,
+        message: 'Bentrok: Anda sudah memiliki jadwal mengajar lain yang bertabrakan pada hari dan rentang jam tersebut.',
+      });
+    }
+
+    await pool.query(
+      `UPDATE jadwal_mengajar 
+       SET hari = ?, jam_mulai = ?, jam_selesai = ?, mata_kuliah = ?, gedung_id = ?
+       WHERE id = ? AND dosen_id = ?`,
+      [hariLower, startFormatted, endFormatted, mata_kuliah.trim(), gedung_id, jadwalId, dosen.id]
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Jadwal mengajar berhasil diperbarui.',
+      data: {
+        id: jadwalId,
+        hari: hariLower,
+        jam_mulai: startFormatted,
+        jam_selesai: endFormatted,
+        mata_kuliah: mata_kuliah.trim(),
+        gedung_id,
+        nama_gedung: gedungRows[0].nama_gedung,
+      },
+    });
+  } catch (error) {
+    console.error('updateJadwalMandiri Error:', error);
+    if (error.sqlState === '45000' || /jam_selesai/.test(error.message)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Jam selesai harus lebih besar dari jam mulai.',
+      });
+    }
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal memperbarui jadwal mengajar.',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * DELETE /api/app-dosen/jadwal/:id
+ * Hapus jadwal mengajar milik dosen sendiri
+ */
+const deleteJadwalMandiri = async (req, res) => {
+  try {
+    const dosen = await getDosenByUserId(req.user.id);
+    if (!dosen) {
+      return res.status(404).json({
+        success: false,
+        message: 'Akun ini tidak terdaftar sebagai dosen.',
+      });
+    }
+
+    const jadwalId = Number(req.params.id);
+    if (!jadwalId) {
+      return res.status(400).json({ success: false, message: 'ID jadwal tidak valid.' });
+    }
+
+    const [deleteResult] = await pool.query(
+      'DELETE FROM jadwal_mengajar WHERE id = ? AND dosen_id = ?',
+      [jadwalId, dosen.id]
+    );
+
+    if (deleteResult.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Jadwal tidak ditemukan atau bukan milik Anda.',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Jadwal mengajar berhasil dihapus.',
+    });
+  } catch (error) {
+    console.error('deleteJadwalMandiri Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal menghapus jadwal mengajar.',
       error: error.message,
     });
   }
@@ -545,5 +839,8 @@ module.exports = {
   kirimLokasiBatch,
   updateGps,
   getJadwal,
+  createJadwalMandiri,
+  updateJadwalMandiri,
+  deleteJadwalMandiri,
   getRiwayat,
 };

@@ -44,16 +44,19 @@ LEFT JOIN gedung g          ON g.id = cs.gedung_id;
 -- ---------------------------------------------------------------------
 CREATE OR REPLACE VIEW v_jadwal_dosen AS
 SELECT
+  jm.id,
   jm.dosen_id,
   d.nama AS nama_dosen,
   jm.hari,
   jm.jam_mulai,
   jm.jam_selesai,
   jm.mata_kuliah,
+  jm.gedung_id,
   g.nama_gedung
 FROM jadwal_mengajar jm
 JOIN dosen d  ON d.id = jm.dosen_id
 JOIN gedung g ON g.id = jm.gedung_id;
+
 
 -- ---------------------------------------------------------------------
 -- v_log_aktivitas

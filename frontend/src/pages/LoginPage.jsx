@@ -3,7 +3,7 @@ import { apiJson, setSession } from '../lib/api';
 import theme from '../styles/theme';
 
 export default function LoginPage({ onLoginSuccess }) {
-  const [activeTab, setActiveTab] = useState('mahasiswa'); // 'mahasiswa' | 'admin'
+  const [activeTab, setActiveTab] = useState('mahasiswa'); // 'mahasiswa' | 'dosen' | 'admin'
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -16,7 +16,7 @@ export default function LoginPage({ onLoginSuccess }) {
     e.preventDefault();
     setError('');
     if (!identifier.trim() || !password) {
-      setError('Email/NIM dan password wajib diisi.');
+      setError('Email/NIM/NIP dan password wajib diisi.');
       return;
     }
     setLoading(true);
@@ -25,10 +25,11 @@ export default function LoginPage({ onLoginSuccess }) {
         password,
         role: activeTab,
       };
-      // Email or NIM
+      // Email or NIM/NIP
       if (identifier.includes('@')) {
         body.email = identifier.trim();
       } else {
+        body.identifier = identifier.trim();
         body.nim = identifier.trim();
       }
 
@@ -53,7 +54,12 @@ export default function LoginPage({ onLoginSuccess }) {
   };
 
   const placeholderText =
-    activeTab === 'mahasiswa' ? 'NIM atau Email Kampus' : 'Email Admin';
+    activeTab === 'mahasiswa'
+      ? 'NIM atau Email Kampus'
+      : activeTab === 'dosen'
+      ? 'NIP atau Email Dosen'
+      : 'Email Admin';
+
 
   return (
     <div
@@ -162,35 +168,42 @@ export default function LoginPage({ onLoginSuccess }) {
             marginBottom: '1.75rem',
           }}
         >
-          {['mahasiswa', 'admin'].map((tab) => (
+          {[
+            { key: 'mahasiswa', label: 'Mahasiswa', icon: 'person' },
+            { key: 'dosen', label: 'Dosen', icon: 'co_present' },
+            { key: 'admin', label: 'Admin / Staff', icon: 'admin_panel_settings' },
+          ].map((tab) => (
             <button
-              key={tab}
+              key={tab.key}
               type="button"
               onClick={() => {
-                setActiveTab(tab);
+                setActiveTab(tab.key);
                 setError('');
                 setIdentifier('');
                 setPassword('');
               }}
               style={{
                 flex: 1,
-                padding: '0.55rem 1rem',
+                padding: '0.55rem 0.65rem',
                 borderRadius: theme.borderRadius.full,
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: '16px',
+                fontSize: '14px',
                 fontWeight: 700,
                 fontFamily: theme.typography.fontFamily.base,
                 transition: 'all 0.22s ease',
-                backgroundColor: activeTab === tab ? '#ffffff' : 'transparent',
-                color: activeTab === tab ? theme.colors.primary : theme.colors.onSurfaceVariant,
-                boxShadow: activeTab === tab ? theme.shadows.cardSm : 'none',
+                backgroundColor: activeTab === tab.key ? '#ffffff' : 'transparent',
+                color: activeTab === tab.key ? theme.colors.primary : theme.colors.onSurfaceVariant,
+                boxShadow: activeTab === tab.key ? theme.shadows.cardSm : 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '16px', verticalAlign: 'middle', marginRight: '5px' }}>
-                {tab === 'mahasiswa' ? 'person' : 'admin_panel_settings'}
+                {tab.icon}
               </span>
-              {tab === 'mahasiswa' ? 'Mahasiswa' : 'Admin / Staff'}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -201,9 +214,13 @@ export default function LoginPage({ onLoginSuccess }) {
           <div>
             <label
               htmlFor="login-identifier"
-              style={{ fontSize: '16px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}
+              style={{ fontSize: '15px', fontWeight: 700, color: theme.colors.onSurfaceVariant, display: 'block', marginBottom: '0.4rem' }}
             >
-              {activeTab === 'mahasiswa' ? 'NIM atau Email Kampus' : 'Email Admin'}
+              {activeTab === 'mahasiswa'
+                ? 'NIM atau Email Kampus'
+                : activeTab === 'dosen'
+                ? 'NIP atau Email Dosen'
+                : 'Email Admin'}
             </label>
             <div
               style={{
@@ -217,7 +234,7 @@ export default function LoginPage({ onLoginSuccess }) {
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '20px', color: theme.colors.outline, marginRight: '0.6rem' }}>
-                {activeTab === 'mahasiswa' ? 'badge' : 'alternate_email'}
+                {activeTab === 'mahasiswa' ? 'badge' : activeTab === 'dosen' ? 'co_present' : 'alternate_email'}
               </span>
               <input
                 id="login-identifier"
@@ -226,6 +243,7 @@ export default function LoginPage({ onLoginSuccess }) {
                 onChange={(e) => setIdentifier(e.target.value)}
                 placeholder={placeholderText}
                 autoComplete="username"
+
                 style={{
                   flex: 1,
                   border: 'none',

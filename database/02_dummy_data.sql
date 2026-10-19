@@ -26,14 +26,15 @@ INSERT INTO gedung (nama_gedung, latitude, longitude, radius_meter) VALUES
   ('Ruang Dosen TI', -5.1348000, 105.2982000, 50);
 
 -- ---------------------------------------------------------------------
--- users + dosen (5 dosen)
+-- users + dosen (5 dosen, password default: 'dosen123')
 -- ---------------------------------------------------------------------
 INSERT INTO users (email, password, role) VALUES
-  ('reza@polinela.ac.id', '$2y$10$dummyhashsatu', 'dosen'),
-  ('siti@polinela.ac.id', '$2y$10$dummyhashdua', 'dosen'),
-  ('budi@polinela.ac.id', '$2y$10$dummyhashtiga', 'dosen'),
-  ('dewi@polinela.ac.id', '$2y$10$dummyhashempat', 'dosen'),
-  ('andi@polinela.ac.id', '$2y$10$dummyhashlima', 'dosen');
+  ('reza@polinela.ac.id', '$2b$10$t/hqGBRBCQhOlfCY8GFvw.oFpDgTpuMNEjs5pRiPEwFRr01ELiOQe', 'dosen'),
+  ('siti@polinela.ac.id', '$2b$10$t/hqGBRBCQhOlfCY8GFvw.oFpDgTpuMNEjs5pRiPEwFRr01ELiOQe', 'dosen'),
+  ('budi@polinela.ac.id', '$2b$10$t/hqGBRBCQhOlfCY8GFvw.oFpDgTpuMNEjs5pRiPEwFRr01ELiOQe', 'dosen'),
+  ('dewi@polinela.ac.id', '$2b$10$t/hqGBRBCQhOlfCY8GFvw.oFpDgTpuMNEjs5pRiPEwFRr01ELiOQe', 'dosen'),
+  ('andi@polinela.ac.id', '$2b$10$t/hqGBRBCQhOlfCY8GFvw.oFpDgTpuMNEjs5pRiPEwFRr01ELiOQe', 'dosen');
+
 
 INSERT INTO dosen (user_id, prodi_id, nip, nama, jabatan, foto, gps_enabled) VALUES
   (1, 1, '198501012010011001', 'Reza Pratama, S.Kom., M.T.', 'Lektor', NULL, TRUE),

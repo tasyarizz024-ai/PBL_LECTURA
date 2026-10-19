@@ -11,6 +11,7 @@ const logAktivitasRoutes = require('./routes/logAktivitasRoutes');
 const jurusanProdiRoutes = require('./routes/jurusanProdiRoutes');
 const jadwalRoutes = require('./routes/jadwalRoutes');
 const appDosenRoutes = require('./routes/appDosenRoutes');
+const adminUserRoutes = require('./routes/adminUserRoutes');
 
 dotenv.config();
 
@@ -29,8 +30,11 @@ app.use('/api/pencarian-dosen', pencarianDosenRoutes);
 app.use('/api/log-aktivitas', logAktivitasRoutes);
 app.use('/api/jurusan-prodi', jurusanProdiRoutes);
 app.use('/api/jadwal-mengajar', jadwalRoutes);
-// API khusus aplikasi dosen (Android)
+// API khusus aplikasi / dashboard dosen
 app.use('/api/app-dosen', appDosenRoutes);
+// API manajemen user admin
+app.use('/api/admin/users', adminUserRoutes);
+
 
 // Basic health check route
 app.get('/', (req, res) => {

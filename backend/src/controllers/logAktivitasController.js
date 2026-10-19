@@ -34,16 +34,19 @@ const getLogAktivitas = async (req, res) => {
       whereClause += ' AND DATE(recorded_at) = ?';
       queryParams.push(date.trim());
     } else {
-      // Filter rentang tanggal
-      if (start_date && start_date.trim() !== '') {
+      // Filter rentang tanggal (mendukung start_date / date_from dan end_date / date_to)
+      const startDateVal = (start_date || req.query.date_from || '').trim();
+      const endDateVal = (end_date || req.query.date_to || '').trim();
+      if (startDateVal !== '') {
         whereClause += ' AND DATE(recorded_at) >= ?';
-        queryParams.push(start_date.trim());
+        queryParams.push(startDateVal);
       }
-      if (end_date && end_date.trim() !== '') {
+      if (endDateVal !== '') {
         whereClause += ' AND DATE(recorded_at) <= ?';
-        queryParams.push(end_date.trim());
+        queryParams.push(endDateVal);
       }
     }
+
 
     // 1. Hitung total baris yang cocok untuk pagination
     const countSql = `SELECT COUNT(*) AS total FROM v_log_aktivitas${whereClause}`;

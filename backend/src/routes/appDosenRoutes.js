@@ -6,14 +6,16 @@ const {
   kirimLokasiBatch,
   updateGps,
   getJadwal,
+  createJadwalMandiri,
+  updateJadwalMandiri,
+  deleteJadwalMandiri,
   getRiwayat,
 } = require('../controllers/appDosenController');
 const { verifyToken, requireRole } = require('../middlewares/authMiddleware');
 
 /**
- * API khusus Aplikasi Dosen (Android).
+ * API khusus Portal / Dashboard Dosen (Web Geolocation + Manajemen Jadwal Mandiri)
  * Semua endpoint dilindungi JWT + role 'dosen'.
- * Login tetap memakai POST /api/auth/login (role: 'dosen').
  */
 
 // Profil dosen milik user yang login
@@ -30,7 +32,10 @@ router.get('/lokasi/riwayat', verifyToken, requireRole('dosen'), getRiwayat);
 // Toggle pelacakan GPS
 router.patch('/gps', verifyToken, requireRole('dosen'), updateGps);
 
-// Jadwal mengajar sendiri
+// Jadwal mengajar mandiri (CRUD)
 router.get('/jadwal', verifyToken, requireRole('dosen'), getJadwal);
+router.post('/jadwal', verifyToken, requireRole('dosen'), createJadwalMandiri);
+router.put('/jadwal/:id', verifyToken, requireRole('dosen'), updateJadwalMandiri);
+router.delete('/jadwal/:id', verifyToken, requireRole('dosen'), deleteJadwalMandiri);
 
 module.exports = router;
